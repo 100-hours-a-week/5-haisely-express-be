@@ -8,6 +8,9 @@ app.use(express.static('public'));
 // 웹 서버가 사용할 포트 번호를 정의합니다.
 const port = 3001;
 
+const boardRouter = require('./routes/boards');
+app.use('/boards', boardRouter)
+
 app.get('/', (req, res) => {
     res.send('Hello World!');
 });
