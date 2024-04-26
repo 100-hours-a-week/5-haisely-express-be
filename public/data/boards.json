@@ -1,24 +1,25 @@
 {"boards" : [
     {
         "post_id": 1,
-        "post_title": "test1",
+        "post_title": "test",
         "post_content": "test",
-        "file_id": 1,
+        "file_id": null,
         "user_id": 1,
-        "nickname": "테스트777",
-        "created_at": "2024-04-12T03:04:19.000Z",
-        "updated_at": "2024-04-12T03:04:19.000Z",
+        "nickname": "테스트",
+        "created_at": "2024-04-12T02:51:44.000Z",
+        "updated_at": "2024-04-12T02:51:44.000Z",
         "deleted_at": null,
-        "like": 20000,
-        "comment_count": 12434,
-        "hits": 234,
-        "profile_image_path": "/images/default.png"
+        "like": "1423",
+        "comment_count": "124214",
+        "hits": "1231",
+        "file_path": "/images/main.webp",
+        "profile_image_path": "/images/logo.jpg"
     },
     {
         "post_id": 2,
         "post_title": "test2",
         "post_content": "test",
-        "file_id": 1,
+        "file_id": null,
         "user_id": 1,
         "nickname": "테스트777",
         "created_at": "2024-04-12T03:04:19.000Z",
@@ -27,6 +28,7 @@
         "like": 243,
         "comment_count": 21434,
         "hits":234,
+        "file_path": "/images/main.webp",
         "profile_image_path": "/images/default.png"
     }
 ]

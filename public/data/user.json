@@ -1,0 +1,9 @@
+{
+    "userId": 1,
+    "email": "test@test.kr",
+    "nickname": "테스트777",
+    "profile_image": "/public/image/profile/test.jpg",
+    "created_at": "2024-03-26T09:59:50.000Z",
+    "updated_at": "2024-03-26T09:59:50.000Z",
+    "deleted_at": null
+}

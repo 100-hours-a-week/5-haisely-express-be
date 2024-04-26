@@ -1,5 +1,6 @@
 const express = require('express');
 const fs = require('fs');
+
 const router = express.Router();
 
 // JSON 파일 경로
@@ -26,7 +27,6 @@ router.get('/:id', (req, res) => {
     }
     res.json(jsonData);
 });
-
 
 
 module.exports = router;

@@ -11,6 +11,9 @@ const port = 3001;
 const boardRouter = require('./routes/boards');
 app.use('/boards', boardRouter)
 
+const uploadRouter = require('./routes/uploadImg');
+app.use('/uploadImg', uploadRouter)
+
 app.get('/', (req, res) => {
     res.send('Hello World!');
 });
