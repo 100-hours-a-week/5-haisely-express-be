@@ -122,9 +122,13 @@ router.patch("/:id", (req, res) =>{
     const boardId = req.params.id;
     const boardIndex = boardData["boards"].findIndex(board => board.post_id === parseInt(boardId));
 
+    const now = new Date();
+    const localTimeString = now.toLocaleString();
+
     boardData["boards"][boardIndex].post_title = requestData.postTitle;
     boardData["boards"][boardIndex].post_content = requestData.postContent;
     boardData["boards"][boardIndex].file_path = requestData.attachFilePath || null;
+    boardData["boards"][boardIndex].updated_at = localTimeString;
 
     saveData(boardData, boardDataPath);
     jsonData = {
@@ -147,14 +151,6 @@ router.delete("/:id", (req, res) =>{
     res.json(jsonData);
 });
 
-
-// 댓글 목록 조회 "/:id/comments"
-router.get("/:id/comments", (req, res) =>{
-    const boardData = loadData(boardDataPath);
-    const commentData = loadData(commentDataPath);
-
-
-});
 
 // 댓글 추가 "/:id/comments"
 router.post("/:id/comments", (req, res) =>{
@@ -205,13 +201,46 @@ router.post("/:id/comments", (req, res) =>{
 
 // 댓글 수정 "/{post_id}/comments/{comment_id}"
 router.patch("/:postId/comments/:commentId", (req, res) =>{
+    const requestData = req.body;
+    if(!requestData.commentContent){
+        console.log("데이터 미포함 요청");
+        jsonData = {
+            "status" : 400, "message" : "invalid", "data" :null
+        }
+        res.json(jsonData);
+        return;
+    }
+
+    const commentData = loadData(commentDataPath);
+    const commentId = req.params.commentId;
+    const commentIndex = commentData["comments"].findIndex(comment => comment.comment_id === parseInt(commentId));
+
+    const now = new Date();
+    const localTimeString = now.toLocaleString();
+
+    commentData["comments"][commentIndex].commentContent = requestData.commentContent;
+    commentData["comments"][commentIndex].updated_at = localTimeString;
+
+    saveData(commentData, commentDataPath);
+    jsonData = {
+        "status" : 200, "message" : "update_post_success", "data" :  null
+    }
+    res.json(jsonData);
 
 });
 
 
 // 댓글 삭제 "/{post_id}/comments/{comment_id}"
 router.delete("/:postId/comments/:commentId", (req, res) =>{
-
+    const commentData = loadData(commentDataPath);
+    const commentId = req.params.commentId;
+    const commentIndex = commentData["comments"].findIndex(comment => comment.comment_id === parseInt(commentId));
+    const removedItem = commentData["comments"].splice(commentIndex, 1);
+    saveData(commentData, commentDataPath);
+    jsonData = {
+        "status" : 200, "message" : "delete_post_success", "data" : null
+    }
+    res.json(jsonData);
 });
 
 
