@@ -38,7 +38,7 @@ router.get('/', (req, res) => {
     res.json(jsonData);
 });
 
-// 게시글 상세 조회
+// 게시글 상세 조회 + 댓글 목록 조회
 router.get('/:id', (req, res) => {
     const boardData = loadData(boardDataPath);
     const boardId = req.params.id;
@@ -53,7 +53,6 @@ router.get('/:id', (req, res) => {
 router.post("/", (req, res) =>{
     const requestData = req.body;
     if(!requestData.postTitle || !requestData.postContent){
-        console.log(requestData.postContent,requestData.postTitle);
         console.log("데이터 미포함 요청");
         jsonData = {
             "status" : 400, "message" : "invalid", "data" :null
@@ -68,8 +67,6 @@ router.post("/", (req, res) =>{
     // user 정보 처리 추가 필요
 
     postId = keyData.board_id + 1;
-    keyData.board_id += 1;
-    saveData(keyData, keyDataPath);
 
     const now = new Date();
     const localTimeString = now.toLocaleString();
@@ -93,6 +90,9 @@ router.post("/", (req, res) =>{
 
     boardData.boards.push(newData);
     saveData(boardData, boardDataPath);
+
+    keyData.board_id += 1;
+    saveData(keyData, keyDataPath);
 
     jsonData = {
         "status" : 201, "message" : "write_post_success", "data" : {"post_id" : newData.post_id}
@@ -123,7 +123,48 @@ router.get("/:id/comments", (req, res) =>{
 
 // 댓글 추가 "/:id/comments"
 router.post("/:id/comments", (req, res) =>{
+    const requestData = req.body;
+    const boardId = req.params.id;
+    if(!requestData.commentContent){
+        console.log("데이터 미포함 요청");
+        jsonData = {
+            "status" : 400, "message" : "invalid", "data" :null
+        }
+        res.json(jsonData);
+        return;
+    }
 
+    let commentData = loadData(commentDataPath);
+    let keyData = loadData(keyDataPath);
+
+    // user 정보 처리 추가 필요
+
+    commentId = keyData.comment_id + 1;
+
+    const now = new Date();
+    const localTimeString = now.toLocaleString();
+
+    const newData =  {
+        "comment_id": commentId,
+        "comment_content": requestData.commentContent,
+        "post_id": boardId,
+        "user_id": 1,  // 수정
+        "nickname": "테스트",  // 수정
+        "created_at": localTimeString,
+        "updated_at": localTimeString,
+        "deleted_at": null,
+        "file_id": 1,
+        "profile_image_path": "/images/default.png"  // 수정
+    }
+    commentData.comments.push(newData);
+    saveData(commentData, commentDataPath);
+
+    keyData.comment_id += 1;
+    saveData(keyData, keyDataPath);
+    jsonData = {
+        "status" : 201, "message" : "write_comment_success", "data" : null
+    }
+    res.json(jsonData);
 });
 
 
