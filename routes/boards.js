@@ -43,8 +43,12 @@ router.get('/:id', (req, res) => {
     const boardData = loadData(boardDataPath);
     const boardId = req.params.id;
     const board = boardData["boards"].find(board => board.post_id === parseInt(boardId));
+    
+    const commentData = loadData(commentDataPath);
+    const comments = commentData["comments"].filter(item => item.post_id === boardId);
+
     jsonData = {
-        "status" : 200, "message" : null, "data" : {"board" : board}
+        "status" : 200, "message" : null, "data" : {"board" : board, "comments":comments}
     }
     res.json(jsonData);
 });
