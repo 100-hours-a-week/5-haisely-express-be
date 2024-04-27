@@ -2,8 +2,8 @@
   "boards": [
     {
       "post_id": 1,
-      "post_title": "test",
-      "post_content": "test",
+      "post_title": "수정된 제목",
+      "post_content": "수정된 내용",
       "file_id": null,
       "user_id": 1,
       "nickname": "테스트",
@@ -13,7 +13,6 @@
       "like": "1423",
       "comment_count": "124214",
       "hits": "1231",
-      "file_path": "/images/main.webp",
       "profile_image_path": "/images/logo.jpg"
     },
     {

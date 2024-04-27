@@ -1,3 +1,6 @@
+// CHECKLIST
+// [ ] 요청에 사용자 확인 과정 필요
+
 const express = require('express');
 const fs = require('fs');
 
@@ -25,8 +28,6 @@ const saveData = (data, filePath) => {
         console.error('Error saving file:', err);
     }
 }
-
-
 
 // 게시글 목록 조회
 router.get('/', (req, res) => {
@@ -107,13 +108,35 @@ router.post("/", (req, res) =>{
 
 // 게시글 수정 "/:id"
 router.patch("/:id", (req, res) =>{
+    const requestData = req.body;
+    if(!requestData.postTitle || !requestData.postContent){
+        console.log("데이터 미포함 요청");
+        jsonData = {
+            "status" : 400, "message" : "invalid", "data" :null
+        }
+        res.json(jsonData);
+        return;
+    }
 
+    const boardData = loadData(boardDataPath);
+    const boardId = req.params.id;
+    const boardIndex = boardData["boards"].findIndex(board => board.post_id === parseInt(boardId));
+
+    boardData["boards"][boardIndex].post_title = requestData.postTitle;
+    boardData["boards"][boardIndex].post_content = requestData.postContent;
+    boardData["boards"][boardIndex].file_path = requestData.attachFilePath || null;
+
+    saveData(boardData, boardDataPath);
+    jsonData = {
+        "status" : 200, "message" : "update_post_success", "data" : {"post_id" : boardId}
+    }
+    res.json(jsonData);
 });
 
 
 // 게시글 삭제 "/:id"
 router.delete("/:id", (req, res) =>{
-
+    
 });
 
 
