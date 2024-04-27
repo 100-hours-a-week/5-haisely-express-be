@@ -136,7 +136,15 @@ router.patch("/:id", (req, res) =>{
 
 // 게시글 삭제 "/:id"
 router.delete("/:id", (req, res) =>{
-    
+    const boardData = loadData(boardDataPath);
+    const boardId = req.params.id;
+    const boardIndex = boardData["boards"].findIndex(board => board.post_id === parseInt(boardId));
+    const removedItem = boardData["boards"].splice(boardIndex, 1);
+    saveData(boardData, boardDataPath);
+    jsonData = {
+        "status" : 200, "message" : "delete_post_success", "data" : null
+    }
+    res.json(jsonData);
 });
 
 
