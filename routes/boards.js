@@ -51,6 +51,17 @@ router.get('/:id', (req, res) => {
 
 // 게시글 추가 "/"
 router.post("/", (req, res) =>{
+    const requestData = req.body;
+    if(!requestData.postTitle || !requestData.postContent){
+        console.log(requestData.postContent,requestData.postTitle);
+        console.log("데이터 미포함 요청");
+        jsonData = {
+            "status" : 400, "message" : "invalid", "data" :null
+        }
+        res.json(jsonData);
+        return;
+    }
+
     let boardData = loadData(boardDataPath);
     let keyData = loadData(keyDataPath);
 
@@ -63,7 +74,6 @@ router.post("/", (req, res) =>{
     const now = new Date();
     const localTimeString = now.toLocaleString();
 
-    const requestData = req.body;
     const newData = {
         "post_id": postId,
         "post_title": requestData.postTitle,
@@ -77,8 +87,8 @@ router.post("/", (req, res) =>{
         "like": "0",
         "comment_count": "0",
         "hits": "1",
-        "file_path": requestData.attachFilePath,
-        "profile_image_path": "/public/image/profile/test.jpg"  // 수정
+        "file_path": requestData.attachFilePath  || null,
+        "profile_image_path": "/image/default.jpg"  // 수정
     };
 
     boardData.boards.push(newData);
