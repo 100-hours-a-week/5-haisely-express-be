@@ -18,6 +18,9 @@ app.use('/boards', boardRouter)
 const uploadRouter = require('./routes/uploadImg');
 app.use('/uploadImg', uploadRouter)
 
+const userRouter = require('./routes/users');
+app.use('/users', userRouter);
+
 app.get('/', (req, res) => {
     res.send('Hello World!');
 });
