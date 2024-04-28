@@ -1,9 +1,22 @@
 {
-    "userId": 1,
-    "email": "test@test.kr",
-    "nickname": "테스트777",
-    "created_at": "2024-03-26T09:59:50.000Z",
-    "updated_at": "2024-03-26T09:59:50.000Z",
-    "deleted_at": null,
-    "auth_token": "pGGXsa6vaKs615CYO0GpJjcDpN6WUjQa"
+    "users": [
+        {
+            "userId": 1,
+            "email": "test@test.kr",
+            "nickname": "테스트777",
+            "profile_image": "/images/default.png",
+            "created_at": "2024-03-26T09:59:50.000Z",
+            "updated_at": "2024-03-26T09:59:50.000Z",
+            "deleted_at": null
+        },
+        {
+            "userId": 2,
+            "email": "test@test.kr",
+            "nickname": "테스트777",
+            "profile_image": "/images/default.png",
+            "created_at": "2024-03-26T09:59:50.000Z",
+            "updated_at": "2024-03-26T09:59:50.000Z",
+            "deleted_at": null
+        }
+    ]
 }
