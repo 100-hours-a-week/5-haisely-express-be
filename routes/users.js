@@ -124,7 +124,7 @@ router.post('/signup', (req, res) => {
     saveData(keyData, keyDataPath);
 
     jsonData = {
-        "status" : 200, "message" : null, "data" : null
+        "status" : 200, "message" : "register_success", "data" : null
     }
     res.json(jsonData);
 });
@@ -234,12 +234,23 @@ router.delete('/:id', (req, res) => {
     res.json(jsonData);
 });
 
-// 로그인 상태 확인하기
+// 로그인 상태 확인
 router.get('/auth/check', (req, res) => {
+    // 쿠키가 유효하다면, 세션 정보 넘겨주기
     const userData = loadData(userDataPath);
+    const userId = req.params.id.find(user => user.userId === parseInt(userId));
+
+    const userJson =  {
+        "user_id": user.userId,
+        "email" : user.email,
+        "nickname" : user.nickname,
+        "profile_image": user.profileImage,
+        "auth_token": "I am not cookie",
+        "auth_status" : True
+    }
 
     jsonData = {
-        "status" : 200, "message" : null, "data" : {"board" : board, "comments":comments}
+        "status" : 200, "message" : null, "data" : {"user":userJson}
     }
     res.json(jsonData);
 });
@@ -247,9 +258,18 @@ router.get('/auth/check', (req, res) => {
 // 이메일 중복 체크
 router.get('/email/check', (req, res) => {
     const userData = loadData(userDataPath);
-
+    const {email} = req.query;
+    const user = userData["users"].find(user => user.email === email);
+    if (user !== undefined){
+        jsonData = {
+            "status" : 400, "message" : "already_exist_email", "data" :null
+        }
+        res.json(jsonData);
+        return;
+    }
+    console.log(user);
     jsonData = {
-        "status" : 200, "message" : null, "data" : {"board" : board, "comments":comments}
+        "status" : 200, "message" : "available_email", "data" : null
     }
     res.json(jsonData);
 });
@@ -257,9 +277,18 @@ router.get('/email/check', (req, res) => {
 // 닉네임 중복 체크
 router.get('/nickname/check', (req, res) => {
     const userData = loadData(userDataPath);
-
+    const {nickname} = req.query;
+    const user = userData["users"].find(user => user.nickname === nickname);
+    if (user !== undefined){
+        jsonData = {
+            "status" : 400, "message" : "already_exist_nickname", "data" :null
+        }
+        res.json(jsonData);
+        return;
+    }
+    console.log(user);
     jsonData = {
-        "status" : 200, "message" : null, "data" : {"board" : board, "comments":comments}
+        "status" : 200, "message" : "available_nickname", "data" : null
     }
     res.json(jsonData);
 });
