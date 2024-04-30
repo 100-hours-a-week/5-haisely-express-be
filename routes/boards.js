@@ -118,7 +118,7 @@ router.patch("/:id", (req, res) =>{
         return;
     }
 
-    const boardData = loadData(boardDataPath);
+    let boardData = loadData(boardDataPath);
     const boardId = req.params.id;
     const boardIndex = boardData["boards"].findIndex(board => board.post_id === parseInt(boardId));
 

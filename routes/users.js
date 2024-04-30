@@ -1,9 +1,15 @@
+// CHECKLIST
+// [ ] JWT -> 쿠키/세션식으로 바꾸기
+// [ ] status 찍고 다니기
 
 const express = require('express');
 const fs = require('fs');
-const jwt = require('jsonwebtoken');
-require('dotenv').config();
 
+const cookieConfig = {
+    httpOnly: true, 
+    maxAge: 1000000,
+    signed: true 
+};
 
 const router = express.Router();
 
@@ -12,32 +18,16 @@ const secretKey = process.env.SECRET_KEY;
 const userDataPath = 'public/data/users.json';
 const blacklist = new Set();
 
-// JWT 검증 미들웨어
 function verifyToken(req, res, next) {
-    const bearerHeader = req.headers['authorization'];
+    const cookieHeader = req.headers['cookie'];
 
-    if (typeof bearerHeader !== 'undefined') {
-        const bearerToken = bearerHeader.split(' ')[1];
-        req.token = bearerToken;
-        jwt.verify(req.token, secretKey, (err, authData) => {
-            if (err) {
-                res.sendStatus(403);
-            } else {
-                next();
-            }
-        });
+    if (typeof cookieHeader !== 'undefined') {
+        // 쿠키 확인
     } else {
-        res.sendStatus(403);
+        res.redirect('/login');
     }
-}
 
-// 블랙 리스트 미들웨어
-function blacklistMiddleware(req, res, next) {
-    if (blacklist.has(req.token)) {
-        res.status(401).json({ message: 'Token has been blacklisted' });
-    } else {
-        next();
-    }
+    // return {"userId" : 1, "nickname":}
 }
 
 const loadData = (dataFilePath) => {
@@ -85,8 +75,8 @@ router.post('/login',  (req, res) => {
         profileImage : user.profile_image
     };
 
-    // JWT 생성
-    const token = jwt.sign(userJson, secretKey, { expiresIn: '1h' });
+    // 쿠키 주는 코드로 수정하기
+    token = "I am not cookie";
 
     data = {
         "userId": user.userId,
@@ -106,43 +96,130 @@ router.post('/login',  (req, res) => {
 
 // 회원가입
 router.post('/signup', (req, res) => {
+    const requestData = req.body;
+    if(!requestData.email || !requestData.password || !requestData.nickname){
+        console.log("데이터 미포함 요청");
+        jsonData = {
+            "status" : 400, "message" : "invalid", "data" :null
+        }
+        res.json(jsonData);
+        return;
+    }
     const userData = loadData(userDataPath);
+    let keyData = loadData(keyDataPath);
 
+    userId = keyData.user_id + 1;
+
+    const now = new Date();
+    const localTimeString = now.toLocaleString();
+
+    newUser = {
+        "userId": userId,
+        "email": requestData.email,
+        "nickname": requestData.nickname,
+        "password": requestData.password,
+        "profile_image": requestData.profileImagePath || null,
+        "created_at": localTimeString,
+        "updated_at": localTimeString,
+        "deleted_at": null
+    }
+
+    keyData.user_id += 1;
+    saveData(keyData, keyDataPath);
     jsonData = {
-        "status" : 200, "message" : null, "data" : {"board" : board, "comments":comments}
+        "status" : 200, "message" : null, "data" : null
     }
     res.json(jsonData);
 });
 
 // 로그아웃
+router.post('/logout', (req, res) => {
+    // const userData = loadData(userDataPath);
+    // 로그아웃 처리
+    jsonData = {
+        "status" : 200, "message" : null, "data" : null
+    }
+    
+    // 로그아웃 후 로그인 페이지로 리디렉션
+    res.redirect('/login');
+    
+    // 로그아웃 응답
+    res.json(jsonData);
+});
+
 
 
 // 유저 정보 조회
 router.get('/:id', (req, res) => {
     const userData = loadData(userDataPath);
+    const userId = req.params.id;
+    let user = userData["users"].find(user => user.userId === parseInt(userId));
+
+    delete user.password;
 
     jsonData = {
-        "status" : 200, "message" : null, "data" : {"board" : board, "comments":comments}
+        "status" : 200, "message" : null, "data" : {"user" : user}
     }
     res.json(jsonData);
 });
 
 // 회원 정보 수정
 router.patch('/:id', (req, res) => {
+    const requestData = req.body;
+    if(!requestData.nickname){
+        console.log("데이터 미포함 요청");
+        jsonData = {
+            "status" : 400, "message" : "invalid", "data" :null
+        }
+        res.json(jsonData);
+        return;
+    }
+
     const userData = loadData(userDataPath);
+    const userId = req.params.id;
+    const userIndex = userData["users"].findIndex(user => user.userId === parseInt(userId));
+    
+    const now = new Date();
+    const localTimeString = now.toLocaleString();
+
+    userData["users"][userIndex].nickname = requestData.nickname;
+    userData["users"][userIndex].profileImage = requestData.profileImage || null;
+    userData["users"][userIndex].updated_at = localTimeString;
+
+    saveData(userData, userDataPath);
 
     jsonData = {
-        "status" : 200, "message" : null, "data" : {"board" : board, "comments":comments}
+        "status" : 200, "message" : "update_user_data_success", "data" : null
     }
     res.json(jsonData);
 });
 
 // 비밀번호 변경
 router.patch('/:id/password', (req, res) => {
+    const requestData = req.body;
+    if(!requestData.password){
+        console.log("데이터 미포함 요청");
+        jsonData = {
+            "status" : 400, "message" : "invalid", "data" :null
+        }
+        res.json(jsonData);
+        return;
+    }
+
     const userData = loadData(userDataPath);
+    const userId = req.params.id;
+    const userIndex = userData["users"].findIndex(user => user.userId === parseInt(userId));
+    
+    const now = new Date();
+    const localTimeString = now.toLocaleString();
+
+    userData["users"][userIndex].password = requestData.password;
+    userData["users"][userIndex].updated_at = localTimeString;
+
+    saveData(userData, userDataPath);
 
     jsonData = {
-        "status" : 200, "message" : null, "data" : {"board" : board, "comments":comments}
+        "status" : 200, "message" : "update_user_password_success", "data" : null
     }
     res.json(jsonData);
 });
