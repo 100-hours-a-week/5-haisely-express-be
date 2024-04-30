@@ -236,34 +236,39 @@ router.delete('/:id', (req, res) => {
     const removedItem = userData["users"].splice(userIndex, 1);
     saveData(userData, userDataPath);
 
-    // // post 삭제, comment 삭제
-    // let boardData = loadData(boardDataPath);
-    // let commentData = loadData(commentDataPath);
-    // const boards = boardData["boards"].filter(item => item.user_id === parseInt(userId));
+    // post 삭제, comment 삭제
+    let boardData = loadData(boardDataPath);
+    let commentData = loadData(commentDataPath);
+    const boards = boardData["boards"].filter(item => item.user_id === parseInt(userId));
 
-    // // 게시글에 연관된 댓글 삭제
-    // boards.forEach(board => {
-    //     let boardId = board.board_id;
-    //     const boardIndex = boardData["boards"].findIndex(item => item.board_id === board.board_id);
-    //     boardData["boards"].splice(boardIndex, 1);
+    // 게시글에 연관된 댓글 삭제
+    boards.forEach(board => {
+        let boardId = board.post_id;
+        // console.log("board_id : ", boardId);
+        const boardIndex = boardData["boards"].findIndex(item => item.post_id === board.post_id);
+        // console.log("board_index : ", boardIndex);
 
-    //     const comments = commentData["comments"].filter(item => item.post_id === parseInt(boardId));
-    //     // 게시글에 연관된 댓글 삭제
-    //     comments.forEach(comment => {
-    //     const commentIndex = commentData["comments"].findIndex(item => item.comment_id === comment.comment_id);
-    //     commentData["comments"].splice(commentIndex, 1);
-    //     });
-    // });
+        boardData["boards"].splice(boardIndex, 1);
 
-    // const comments = commentData["comments"].filter(item => item.user_id === parseInt(userId));
-    // // 게시글에 연관된 댓글 삭제
-    // comments.forEach(comment => {
-    //     const commentIndex = commentData["comments"].findIndex(item => item.comment_id === comment.comment_id);
-    //     commentData["comments"].splice(commentIndex, 1);
-    // });
+        const comments = commentData["comments"].filter(item => item.post_id === parseInt(boardId));
+        // 게시글에 연관된 댓글 삭제
+        comments.forEach(comment => {
+            // console.log("1) comment_id : ", comment.comment_id);
+        const commentIndex = commentData["comments"].findIndex(item => item.comment_id === comment.comment_id);
+        commentData["comments"].splice(commentIndex, 1);
+        });
+    });
 
-    // saveData(boardData, boardDataPath);
-    // saveData(commentData, commentDataPath);
+    const comments = commentData["comments"].filter(item => item.user_id === parseInt(userId));
+    // 게시글에 연관된 댓글 삭제
+    comments.forEach(comment => {
+        // console.log("2) comment_id : ", comment.comment_id);
+        const commentIndex = commentData["comments"].findIndex(item => item.comment_id === comment.comment_id);
+        commentData["comments"].splice(commentIndex, 1);
+    });
+
+    saveData(boardData, boardDataPath);
+    saveData(commentData, commentDataPath);
 
     jsonData = {
         "status" : 200, "message" : "delete_user_data_success", "data" : null
