@@ -46,7 +46,7 @@ router.get('/:id', (req, res) => {
     const board = boardData["boards"].find(board => board.post_id === parseInt(boardId));
     
     const commentData = loadData(commentDataPath);
-    const comments = commentData["comments"].filter(item => item.post_id === boardId);
+    const comments = commentData["comments"].filter(item => item.post_id === parseInt(boardId));
 
     jsonData = {
         "status" : 200, "message" : null, "data" : {"board" : board, "comments":comments}
@@ -118,7 +118,7 @@ router.patch("/:id", (req, res) =>{
         return;
     }
 
-    const boardData = loadData(boardDataPath);
+    let boardData = loadData(boardDataPath);
     const boardId = req.params.id;
     const boardIndex = boardData["boards"].findIndex(board => board.post_id === parseInt(boardId));
 
@@ -159,6 +159,8 @@ router.delete("/:id", (req, res) => {
         "status" : 200, "message" : "delete_post_success", "data" : null
     }
     res.json(jsonData);
+
+    // [ ] 댓글 삭제도 해야함
 });
 
 
@@ -189,7 +191,7 @@ router.post("/:id/comments", (req, res) =>{
     const newData =  {
         "comment_id": commentId,
         "comment_content": requestData.commentContent,
-        "post_id": boardId,
+        "post_id": parseInt(boardId),
         "user_id": 1,  // 수정
         "nickname": "테스트",  // 수정
         "created_at": localTimeString,
@@ -229,7 +231,7 @@ router.patch("/:postId/comments/:commentId", (req, res) =>{
     const now = new Date();
     const localTimeString = now.toLocaleString();
 
-    commentData["comments"][commentIndex].commentContent = requestData.commentContent;
+    commentData["comments"][commentIndex].comment_content = requestData.commentContent;
     commentData["comments"][commentIndex].updated_at = localTimeString;
 
     saveData(commentData, commentDataPath);
