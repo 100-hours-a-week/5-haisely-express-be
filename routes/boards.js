@@ -139,17 +139,28 @@ router.patch("/:id", (req, res) =>{
 
 
 // 게시글 삭제 "/:id"
-router.delete("/:id", (req, res) =>{
-    const boardData = loadData(boardDataPath);
+router.delete("/:id", (req, res) => {
+    let boardData = loadData(boardDataPath);
     const boardId = req.params.id;
     const boardIndex = boardData["boards"].findIndex(board => board.post_id === parseInt(boardId));
     const removedItem = boardData["boards"].splice(boardIndex, 1);
+
+    let commentData = loadData(commentDataPath);
+    const comments = commentData["comments"].filter(item => item.post_id === parseInt(boardId));
+    // 게시글에 연관된 댓글 삭제
+    comments.forEach(comment => {
+        const commentIndex = commentData["comments"].findIndex(item => item.comment_id === comment.comment_id);
+        commentData["comments"].splice(commentIndex, 1);
+    });
     saveData(boardData, boardDataPath);
+    saveData(commentData, commentDataPath);
+
     jsonData = {
         "status" : 200, "message" : "delete_post_success", "data" : null
     }
     res.json(jsonData);
 });
+
 
 
 // 댓글 추가 "/:id/comments"
