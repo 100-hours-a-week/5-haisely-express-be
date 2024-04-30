@@ -1,5 +1,6 @@
 // CHECKLIST
 // [ ] 요청에 사용자 확인 과정 필요
+// [x] 댓글 삭제도 해야함
 
 const express = require('express');
 const fs = require('fs');
@@ -159,8 +160,6 @@ router.delete("/:id", (req, res) => {
         "status" : 200, "message" : "delete_post_success", "data" : null
     }
     res.json(jsonData);
-
-    // [ ] 댓글 삭제도 해야함
 });
 
 

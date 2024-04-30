@@ -18,7 +18,8 @@ const secretKey = process.env.SECRET_KEY;
 
 const userDataPath = 'public/data/users.json';
 const keyDataPath = 'public/data/keys.json';
-const blacklist = new Set();
+const boardDataPath = 'public/data/boards.json';
+const commentDataPath = 'public/data/comments.json';
 
 function verifyToken(req, res, next) {
     const cookieHeader = req.headers['cookie'];
@@ -81,7 +82,7 @@ router.post('/login',  (req, res) => {
     token = "I am not cookie";
 
     data = {
-        "userId": user.userId,
+        "user_id": user.user_id,
         "email": user.email,
         "nickname": user.nickname,
         "created_at": user.created_at,
@@ -116,7 +117,7 @@ router.post('/signup', (req, res) => {
     const localTimeString = now.toLocaleString();
 
     newUser = {
-        "userId": userId,
+        "user_id": userId,
         "email": requestData.email,
         "nickname": requestData.nickname,
         "password": requestData.password,
@@ -156,7 +157,7 @@ router.post('/logout', (req, res) => {
 router.get('/:id', (req, res) => {
     const userData = loadData(userDataPath);
     const userId = req.params.id;
-    let user = userData["users"].find(user => user.userId === parseInt(userId));
+    let user = userData["users"].find(user => user.user_id === parseInt(userId));
 
     delete user.password;
 
@@ -180,7 +181,7 @@ router.patch('/:id', (req, res) => {
 
     const userData = loadData(userDataPath);
     const userId = req.params.id;
-    const userIndex = userData["users"].findIndex(user => user.userId === parseInt(userId));
+    const userIndex = userData["users"].findIndex(user => user.user_id === parseInt(userId));
     
     const now = new Date();
     const localTimeString = now.toLocaleString();
@@ -211,7 +212,7 @@ router.patch('/:id/password', (req, res) => {
 
     const userData = loadData(userDataPath);
     const userId = req.params.id;
-    const userIndex = userData["users"].findIndex(user => user.userId === parseInt(userId));
+    const userIndex = userData["users"].findIndex(user => user.user_id === parseInt(userId));
     
     const now = new Date();
     const localTimeString = now.toLocaleString();
@@ -234,6 +235,36 @@ router.delete('/:id', (req, res) => {
     const userIndex = userData["users"].findIndex(user => user.user_id === parseInt(userId));
     const removedItem = userData["users"].splice(userIndex, 1);
     saveData(userData, userDataPath);
+
+    // // post 삭제, comment 삭제
+    // let boardData = loadData(boardDataPath);
+    // let commentData = loadData(commentDataPath);
+    // const boards = boardData["boards"].filter(item => item.user_id === parseInt(userId));
+
+    // // 게시글에 연관된 댓글 삭제
+    // boards.forEach(board => {
+    //     let boardId = board.board_id;
+    //     const boardIndex = boardData["boards"].findIndex(item => item.board_id === board.board_id);
+    //     boardData["boards"].splice(boardIndex, 1);
+
+    //     const comments = commentData["comments"].filter(item => item.post_id === parseInt(boardId));
+    //     // 게시글에 연관된 댓글 삭제
+    //     comments.forEach(comment => {
+    //     const commentIndex = commentData["comments"].findIndex(item => item.comment_id === comment.comment_id);
+    //     commentData["comments"].splice(commentIndex, 1);
+    //     });
+    // });
+
+    // const comments = commentData["comments"].filter(item => item.user_id === parseInt(userId));
+    // // 게시글에 연관된 댓글 삭제
+    // comments.forEach(comment => {
+    //     const commentIndex = commentData["comments"].findIndex(item => item.comment_id === comment.comment_id);
+    //     commentData["comments"].splice(commentIndex, 1);
+    // });
+
+    // saveData(boardData, boardDataPath);
+    // saveData(commentData, commentDataPath);
+
     jsonData = {
         "status" : 200, "message" : "delete_user_data_success", "data" : null
     }
@@ -244,10 +275,10 @@ router.delete('/:id', (req, res) => {
 router.get('/auth/check', (req, res) => {
     // 쿠키가 유효하다면, 세션 정보 넘겨주기
     const userData = loadData(userDataPath);
-    user = userData["users"].find(user => user.userId === 1);
+    user = userData["users"].find(user => user.user_id === 1);
 
     const userJson =  {
-        "user_id": user.userId,
+        "user_id": user.user_id,
         "email" : user.email,
         "nickname" : user.nickname,
         "profile_image": user.profile_image,
