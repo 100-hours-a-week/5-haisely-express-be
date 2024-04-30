@@ -16,6 +16,7 @@ const router = express.Router();
 const secretKey = process.env.SECRET_KEY;
 
 const userDataPath = 'public/data/users.json';
+const keyDataPath = 'public/data/keys.json';
 const blacklist = new Set();
 
 function verifyToken(req, res, next) {
@@ -51,7 +52,7 @@ const saveData = (data, filePath) => {
 
 // 로그인
 router.post('/login',  (req, res) => {
-    if(!requestData.email || !requestData.password){
+    if(!requestData.email || !requestData.password||!requestData.nickname){
         console.log("데이터 미포함 요청");
         jsonData = {
             "status" : 400, "message" : "invalid", "data" :null
@@ -68,13 +69,6 @@ router.post('/login',  (req, res) => {
         res.json(jsonData);
         return;
     }
-
-    const userJson = {
-        id: user.userId,
-        nickname: user.nickname,
-        profileImage : user.profile_image
-    };
-
     // 쿠키 주는 코드로 수정하기
     token = "I am not cookie";
 
@@ -105,7 +99,7 @@ router.post('/signup', (req, res) => {
         res.json(jsonData);
         return;
     }
-    const userData = loadData(userDataPath);
+    let userData = loadData(userDataPath);
     let keyData = loadData(keyDataPath);
 
     userId = keyData.user_id + 1;
@@ -118,14 +112,17 @@ router.post('/signup', (req, res) => {
         "email": requestData.email,
         "nickname": requestData.nickname,
         "password": requestData.password,
-        "profile_image": requestData.profileImagePath || null,
+        "profile_image": requestData.profileImagePath || "/images/default.png",
         "created_at": localTimeString,
-        "updated_at": localTimeString,
-        "deleted_at": null
+        "updated_at": localTimeString
     }
+
+    userData.users.push(newUser);
+    saveData(userData, userDataPath);
 
     keyData.user_id += 1;
     saveData(keyData, keyDataPath);
+
     jsonData = {
         "status" : 200, "message" : null, "data" : null
     }
@@ -183,7 +180,7 @@ router.patch('/:id', (req, res) => {
     const localTimeString = now.toLocaleString();
 
     userData["users"][userIndex].nickname = requestData.nickname;
-    userData["users"][userIndex].profileImage = requestData.profileImage || null;
+    userData["users"][userIndex].profile_image = requestData.profileImage || "/images/default.png";
     userData["users"][userIndex].updated_at = localTimeString;
 
     saveData(userData, userDataPath);
@@ -227,9 +224,12 @@ router.patch('/:id/password', (req, res) => {
 // 회원 정보 삭제
 router.delete('/:id', (req, res) => {
     const userData = loadData(userDataPath);
-
+    const userId = req.params.id;
+    const userIndex = userData["users"].findIndex(user => user.user_id === parseInt(userId));
+    const removedItem = userData["users"].splice(userIndex, 1);
+    saveData(userData, userDataPath);
     jsonData = {
-        "status" : 200, "message" : null, "data" : {"board" : board, "comments":comments}
+        "status" : 200, "message" : "delete_user_data_success", "data" : null
     }
     res.json(jsonData);
 });
