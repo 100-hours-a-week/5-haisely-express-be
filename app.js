@@ -1,6 +1,8 @@
 // express 모듈을 불러옵니다.
 const express = require('express');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
 
 // express 애플리케이션을 생성합니다.
 const app = express();
@@ -8,6 +10,14 @@ const app = express();
 app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(session({
+	secret: 'my secret',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true },
+}));
+
 
 // 웹 서버가 사용할 포트 번호를 정의합니다.
 const port = 3001;
@@ -24,7 +34,6 @@ app.use('/users', userRouter);
 app.get('/', (req, res) => {
     res.send('Hello World!');
 });
-
 
 
 app.listen(port, () => {
