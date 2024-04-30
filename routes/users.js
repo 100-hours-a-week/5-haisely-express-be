@@ -1,6 +1,7 @@
 // CHECKLIST
-// [ ] JWT -> 쿠키/세션식으로 바꾸기
+// [ ] 쿠키 세션 구현
 // [ ] status 찍고 다니기
+// [ ] userId -> user_id로 바꾸기
 
 const express = require('express');
 const fs = require('fs');
@@ -52,7 +53,8 @@ const saveData = (data, filePath) => {
 
 // 로그인
 router.post('/login',  (req, res) => {
-    if(!requestData.email || !requestData.password||!requestData.nickname){
+    const requestData = req.body;
+    if(!requestData.email || !requestData.password){
         console.log("데이터 미포함 요청");
         jsonData = {
             "status" : 400, "message" : "invalid", "data" :null
@@ -62,7 +64,13 @@ router.post('/login',  (req, res) => {
     }
     const userData = loadData(userDataPath);
     const user = userData["users"].find(user => user.email === requestData.email);
-    if (user.password !== requestData.password){
+    if (user === undefined){
+        jsonData = {
+            "status" : 400, "message" : "invalid", "data" :null
+        }
+        res.json(jsonData);
+        return;
+    } else if (user.password !== requestData.password){
         jsonData = {
             "status" : 400, "message" : "invalid", "data" :null
         }
@@ -124,7 +132,7 @@ router.post('/signup', (req, res) => {
     saveData(keyData, keyDataPath);
 
     jsonData = {
-        "status" : 200, "message" : "register_success", "data" : null
+        "status" : 201, "message" : "register_success", "data" : null
     }
     res.json(jsonData);
 });
@@ -144,9 +152,7 @@ router.post('/logout', (req, res) => {
     res.json(jsonData);
 });
 
-
-
-// 유저 정보 조회
+// 회원 정보 조회
 router.get('/:id', (req, res) => {
     const userData = loadData(userDataPath);
     const userId = req.params.id;
@@ -238,15 +244,15 @@ router.delete('/:id', (req, res) => {
 router.get('/auth/check', (req, res) => {
     // 쿠키가 유효하다면, 세션 정보 넘겨주기
     const userData = loadData(userDataPath);
-    const userId = req.params.id.find(user => user.userId === parseInt(userId));
+    user = userData["users"].find(user => user.userId === 1);
 
     const userJson =  {
         "user_id": user.userId,
         "email" : user.email,
         "nickname" : user.nickname,
-        "profile_image": user.profileImage,
+        "profile_image": user.profile_image,
         "auth_token": "I am not cookie",
-        "auth_status" : True
+        "auth_status" : true
     }
 
     jsonData = {
