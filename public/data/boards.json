@@ -13,8 +13,8 @@
       "like": "0",
       "comment_count": "0",
       "hits": "1",
-      "file_path": null,
-      "profile_image_path": "/image/default.jpg"
+      "file_path": "/images/main.webp",
+      "profile_image_path": "/images/default.png"
     },
     {
       "post_id": 4,
@@ -29,8 +29,72 @@
       "like": "0",
       "comment_count": "0",
       "hits": "1",
-      "file_path": null,
-      "profile_image_path": "/image/default.jpg"
+      "file_path": "/images/main.webp",
+      "profile_image_path": "/images/default.png"
+    },
+    {
+      "post_id": 7,
+      "post_title": "게시글 제목 qlql",
+      "post_content": "게시글 내용",
+      "file_id": null,
+      "user_id": 1,
+      "nickname": "테스트",
+      "created_at": "2024. 5. 1. 오후 9:17:23",
+      "updated_at": "2024. 5. 1. 오후 9:17:23",
+      "deleted_at": null,
+      "like": "0",
+      "comment_count": "0",
+      "hits": "1",
+      "file_path": "/images/main.webp",
+      "profile_image_path": "/images/default.png"
+    },
+    {
+      "post_id": 8,
+      "post_title": "게시글 제목 qlql",
+      "post_content": "게시글 내용",
+      "file_id": null,
+      "user_id": 1,
+      "nickname": "테스트",
+      "created_at": "2024. 5. 1. 오후 9:17:24",
+      "updated_at": "2024. 5. 1. 오후 9:17:24",
+      "deleted_at": null,
+      "like": "0",
+      "comment_count": "0",
+      "hits": "1",
+      "file_path": "/images/main.webp",
+      "profile_image_path": "/images/default.png"
+    },
+    {
+      "post_id": 9,
+      "post_title": "게시글 제목 qlql",
+      "post_content": "게시글 내용",
+      "file_id": null,
+      "user_id": 1,
+      "nickname": "테스트",
+      "created_at": "2024. 5. 1. 오후 9:17:25",
+      "updated_at": "2024. 5. 1. 오후 9:17:25",
+      "deleted_at": null,
+      "like": "0",
+      "comment_count": "0",
+      "hits": "1",
+      "file_path": "/images/main.webp",
+      "profile_image_path": "/images/default.png"
+    },
+    {
+      "post_id": 10,
+      "post_title": "게시글 제목 qlql",
+      "post_content": "게시글 내용",
+      "file_id": null,
+      "user_id": 1,
+      "nickname": "테스트",
+      "created_at": "2024. 5. 1. 오후 9:17:26",
+      "updated_at": "2024. 5. 1. 오후 9:17:26",
+      "deleted_at": null,
+      "like": "0",
+      "comment_count": "0",
+      "hits": "1",
+      "file_path": "/images/main.webp",
+      "profile_image_path": "/images/default.png"
     }
   ]
 }
