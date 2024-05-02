@@ -91,7 +91,7 @@ router.post("/", (req, res) =>{
         "comment_count": "0",
         "hits": "1",
         "file_path": requestData.attachFilePath  || null,
-        "profile_image_path": "/image/default.jpg"  // 수정
+        "profile_image_path": "/images/default.png"  // 수정
     };
 
     boardData.boards.push(newData);

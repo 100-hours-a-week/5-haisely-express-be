@@ -1,3 +1,22 @@
 {
-  "users": []
+  "users": [
+    {
+      "user_id": 1,
+      "email": "te333t@test.koqqq",
+      "nickname": "안녕밍",
+      "password": "qwer1234!Q",
+      "profile_image": "/images/default.png",
+      "created_at": "2024. 5. 1. 오후 8:39:10",
+      "updated_at": "2024. 5. 1. 오후 8:39:10"
+    },
+    {
+      "user_id": 9,
+      "email": "t2e333t@test.koqqq",
+      "nickname": "안녕밍밍",
+      "password": "qwer1234!Q",
+      "profile_image": "/images/default.png",
+      "created_at": "2024. 5. 1. 오후 8:40:18",
+      "updated_at": "2024. 5. 1. 오후 8:40:18"
+    }
+  ]
 }
