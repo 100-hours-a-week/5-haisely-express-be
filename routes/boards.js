@@ -107,9 +107,10 @@ router.post("/", (req, res) =>{
 });
 
 
-// 게시글 수정 "/:id"
+// 게시글 수정 "/:id" *
 router.patch("/:id", (req, res) =>{
     const requestData = req.body;
+    console.log(req.body);
     if(!requestData.postTitle || !requestData.postContent){
         console.log("데이터 미포함 요청");
         jsonData = {
@@ -133,13 +134,13 @@ router.patch("/:id", (req, res) =>{
 
     saveData(boardData, boardDataPath);
     jsonData = {
-        "status" : 200, "message" : "update_post_success", "data" : {"post_id" : boardId}
+        "status" : 201, "message" : "update_post_success", "data" : {"post_id" : boardId}
     }
     res.json(jsonData);
 });
 
 
-// 게시글 삭제 "/:id"
+// 게시글 삭제 "/:id" *
 router.delete("/:id", (req, res) => {
     let boardData = loadData(boardDataPath);
     const boardId = req.params.id;
@@ -155,6 +156,8 @@ router.delete("/:id", (req, res) => {
     });
     saveData(boardData, boardDataPath);
     saveData(commentData, commentDataPath);
+
+
 
     jsonData = {
         "status" : 200, "message" : "delete_post_success", "data" : null
@@ -211,7 +214,7 @@ router.post("/:id/comments", (req, res) =>{
 });
 
 
-// 댓글 수정 "/{post_id}/comments/{comment_id}"
+// 댓글 수정 "/{post_id}/comments/{comment_id}" *
 router.patch("/:postId/comments/:commentId", (req, res) =>{
     const requestData = req.body;
     if(!requestData.commentContent){
@@ -242,7 +245,7 @@ router.patch("/:postId/comments/:commentId", (req, res) =>{
 });
 
 
-// 댓글 삭제 "/{post_id}/comments/{comment_id}"
+// 댓글 삭제 "/{post_id}/comments/{comment_id}" *
 router.delete("/:postId/comments/:commentId", (req, res) =>{
     const commentData = loadData(commentDataPath);
     const commentId = req.params.commentId;
