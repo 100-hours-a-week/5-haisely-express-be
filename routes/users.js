@@ -2,6 +2,7 @@
 // [ ] 쿠키 세션 구현
 // [ ] status 찍고 다니기
 // [ ] userId -> user_id로 바꾸기
+// [ ] 로그인 실패 구현
 
 const express = require('express');
 const fs = require('fs');
@@ -302,6 +303,7 @@ router.get('/email/check', (req, res) => {
     const userData = loadData(userDataPath);
     const {email} = req.query;
     const user = userData["users"].find(user => user.email === email);
+    console.log(user);
     if (user !== undefined){
         jsonData = {
             "status" : 400, "message" : "already_exist_email", "data" :null
