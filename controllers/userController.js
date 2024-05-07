@@ -3,6 +3,7 @@
 // [ ] status 찍고 다니기
 
 const {loadData, saveData, makeRes, getTimeNow} = require ('./controllerUtils.js');
+const {deleteBoardById} = require('./boardController.js');
 
 const userDataPath = 'public/data/users.json';
 const keyDataPath = 'public/data/keys.json';
@@ -56,6 +57,17 @@ const patchUserContent = (user) => {
     saveData(userData, userDataPath);
 }
 
+const deleteUserById = (id) => {
+    const userData = loadData(userDataPath);
+    const userIndex = userData["users"].findIndex(u => u.user_id === parseInt(id));
+    const removedItem = userData["users"].splice(userIndex, 1);
+    saveData(userData, userDataPath);
+    // delete boards written by user
+    let boardData = loadData(boardDataPath);
+    const boards = boardData["boards"].filter(b => b.user_id === parseInt(id));
+    boards.forEach(board => deleteBoardById(board.board_id));
+}
+
 /* Controller */
 const login = (req, res) => {
     const requestData = req.body;
@@ -85,7 +97,7 @@ const signUp = (req, res) => {
 
 const logout = (req, res) => {
     // need to add session control code
-    res.redirect('/login').res(200).json(makeRes(200, null, null));
+    res.redirect('/login').status(200).json(makeRes(200, null, null));
 }
 
 const getUserById = (req, res) => {
@@ -122,48 +134,8 @@ const patchPassword = (req, res) => {
 const deleteUser = (req, res) => {
     const userData = loadData(userDataPath);
     const userId = req.params.id;
-    const userIndex = userData["users"].findIndex(user => user.user_id === parseInt(userId));
-    const removedItem = userData["users"].splice(userIndex, 1);
-    saveData(userData, userDataPath);
-
-    // post 삭제, comment 삭제
-    let boardData = loadData(boardDataPath);
-    let commentData = loadData(commentDataPath);
-    const boards = boardData["boards"].filter(item => item.user_id === parseInt(userId));
-
-    // 게시글에 연관된 댓글 삭제
-    boards.forEach(board => {
-        let boardId = board.post_id;
-        // console.log("board_id : ", boardId);
-        const boardIndex = boardData["boards"].findIndex(item => item.post_id === board.post_id);
-        // console.log("board_index : ", boardIndex);
-
-        boardData["boards"].splice(boardIndex, 1);
-
-        const comments = commentData["comments"].filter(item => item.post_id === parseInt(boardId));
-        // 게시글에 연관된 댓글 삭제
-        comments.forEach(comment => {
-            // console.log("1) comment_id : ", comment.comment_id);
-        const commentIndex = commentData["comments"].findIndex(item => item.comment_id === comment.comment_id);
-        commentData["comments"].splice(commentIndex, 1);
-        });
-    });
-
-    const comments = commentData["comments"].filter(item => item.user_id === parseInt(userId));
-    // 게시글에 연관된 댓글 삭제
-    comments.forEach(comment => {
-        // console.log("2) comment_id : ", comment.comment_id);
-        const commentIndex = commentData["comments"].findIndex(item => item.comment_id === comment.comment_id);
-        commentData["comments"].splice(commentIndex, 1);
-    });
-
-    saveData(boardData, boardDataPath);
-    saveData(commentData, commentDataPath);
-
-    jsonData = {
-        "status" : 200, "message" : "delete_user_data_success", "data" : null
-    }
-    res.json(jsonData);
+    deleteUserById(userId);
+    res.status(200).json(makeRes(204,"delete_user_success", null));
 }
 
 const authCheck = (req, res) => {

@@ -1,56 +1,30 @@
 {
   "boards": [
     {
-      "post_id": 34,
-      "post_title": "수정된 제목",
-      "post_content": "수정된 내용",
-      "user_id": 1,
-      "nickname": "테스트",
-      "created_at": "2024. 5. 7. 오전 12:07:35",
-      "updated_at": "2024. 5. 7. 오후 3:13:43",
-      "comment_count": "0",
-      "hits": "1",
-      "file_path": null,
-      "profile_image_path": "/images/default.png"
-    },
-    {
-      "post_id": 36,
-      "post_title": "이ㅣ?이이",
-      "post_content": "헤에",
-      "user_id": 1,
-      "nickname": "테스트",
-      "created_at": "2024. 5. 7. 오후 1:40:38",
-      "updated_at": "2024. 5. 7. 오후 10:06:35",
-      "comment_count": "0",
-      "hits": "1",
-      "file_path": null,
-      "profile_image_path": "/images/default.png"
-    },
-    {
-      "post_title": "게시글 제목 qlql",
-      "post_content": "게시글 내용",
-      "user_id": 1,
-      "nickname": "테스트",
-      "created_at": "2024. 5. 7. 오후 2:25:16",
-      "updated_at": "2024. 5. 7. 오후 2:25:16",
-      "comment_count": "0",
-      "hits": "1",
-      "file_path": null,
-      "profile_image_path": "/images/default.png",
-      "post_id": 37
-    },
-    {
       "post_title": "제목",
-      "post_content": "히히히히",
+      "post_content": "히히",
       "user_id": 1,
       "nickname": "테스트",
-      "created_at": "2024. 5. 7. 오후 10:50:53",
-      "updated_at": "2024. 5. 7. 오후 10:50:53",
+      "created_at": "2024. 5. 8. 오전 1:14:40",
+      "updated_at": "2024. 5. 8. 오전 1:14:40",
       "comment_count": "0",
       "hits": "1",
-      "file_path": "/uploads/back.png",
+      "file_path": null,
       "profile_image_path": "/images/default.png",
-      "post_id": 38
+      "post_id": 39
+    },
+    {
+      "post_title": "내용",
+      "post_content": "후후",
+      "user_id": 1,
+      "nickname": "테스트",
+      "created_at": "2024. 5. 8. 오전 1:15:04",
+      "updated_at": "2024. 5. 8. 오전 1:15:04",
+      "comment_count": "0",
+      "hits": "1",
+      "file_path": "/uploads/apple.png",
+      "profile_image_path": "/images/default.png",
+      "post_id": 40
     }
   ]
 }
