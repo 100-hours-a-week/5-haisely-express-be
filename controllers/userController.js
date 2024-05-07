@@ -25,6 +25,29 @@ const findUserByNickname = (nickname) => {
     return userData["users"].find(user => user.nickname === nickname);
 }
 
+const makeNewUser = (email, password, nickname, profileImagePath) => {
+    return {
+        "email": email,
+        "nickname": nickname,
+        "password": password,
+        "profile_image": profileImagePath || "/images/default.png",
+        "created_at": getTimeNow(),
+        "updated_at": getTimeNow()
+    }
+}
+
+const saveNewUser = (newUser) => {
+    let userData = loadData(userDataPath);
+    let keyData = loadData(keyDataPath);
+    const userId = keyData.user_id + 1;
+    newUser.user_id = userId;  // set user_id
+    userData.users.push(newUser);  // push new user
+    saveData(userData, userDataPath);
+    keyData.user_id += 1;
+    saveData(keyData, keyDataPath);
+    return userId;
+}
+
 
 /* Controller */
 const login = (req, res) => {
@@ -43,42 +66,14 @@ const login = (req, res) => {
 
 const signUp = (req, res) => {
     const requestData = req.body;
-    if(!requestData.email || !requestData.password || !requestData.nickname){
-        console.log("데이터 미포함 요청");
-        jsonData = {
-            "status" : 400, "message" : "invalid", "data" :null
-        }
-        res.json(jsonData);
-        return;
-    }
-    let userData = loadData(userDataPath);
-    let keyData = loadData(keyDataPath);
-
-    userId = keyData.user_id + 1;
-
-    const now = new Date();
-    const localTimeString = now.toLocaleString();
-
-    newUser = {
-        "user_id": userId,
-        "email": requestData.email,
-        "nickname": requestData.nickname,
-        "password": requestData.password,
-        "profile_image": requestData.profileImagePath || "/images/default.png",
-        "created_at": localTimeString,
-        "updated_at": localTimeString
-    }
-
-    userData.users.push(newUser);
-    saveData(userData, userDataPath);
-
-    keyData.user_id += 1;
-    saveData(keyData, keyDataPath);
-
-    jsonData = {
-        "status" : 201, "message" : "register_success", "data" : null
-    }
-    res.json(jsonData);
+    if(!requestData.email){res.status(400).json(makeRes(400, "invalid_email", null)); return;} // invalid email
+    if(!requestData.nickname){res.status(400).json(makeRes(400, "invalid_nickname", null)); return;} // invalid nickname
+    if(!requestData.password){res.status(400).json(makeRes(400, "invalid_password", null)); return;} // invalid password
+    if(findUserByEmail(requestData.email)){res.status(400).json(makeRes(400, "used_email", null)); return;} // used email
+    if(findUserByNickname(requestData.nickname)){res.status(400).json(makeRes(400, "used_nickname", null)); return;} // used nickname
+    const newUser = makeNewUser(requestData.email, requestData.password, requestData.nickname, requestData.profileImagePath);
+    const userId = saveNewUser(newUser);
+    res.status(201).json(makeRes(201, "register_success", {"user_id":userId}));
 }
 
 const logout = (req, res) => {
