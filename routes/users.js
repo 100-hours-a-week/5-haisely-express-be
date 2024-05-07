@@ -13,7 +13,7 @@ router.post('/signup', userController.signUp);
 router.post('/logout', userController.logout);
 
 // 회원 정보 조회
-router.get('/:id', userController.getUserId);
+router.get('/:id', userController.getUserById);
 
 // 회원 정보 수정
 router.patch('/:id', userController.patchUser);

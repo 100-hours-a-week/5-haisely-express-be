@@ -1,313 +1,166 @@
 // CHECKLIST
 // [ ] 쿠키 세션 구현
-// [ ] status 찍고 다니기
-// [ ] userId -> user_id로 바꾸기
-// [ ] 로그인 실패 구현
 
-const {loadData, saveData} = require ('./controllerUtils.js');
+const {loadData, saveData, makeRes, getTimeNow} = require ('./controllerUtils.js');
+const {deleteBoardById} = require('./boardController.js');
 
 const userDataPath = 'public/data/users.json';
 const keyDataPath = 'public/data/keys.json';
 const boardDataPath = 'public/data/boards.json';
 const commentDataPath = 'public/data/comments.json';
 
-const cookieConfig = {
-    httpOnly: true, 
-    maxAge: 1000000,
-    signed: true 
-};
-
-function verifyToken(req, res, next) {
-    const cookieHeader = req.headers['cookie'];
-
-    if (typeof cookieHeader !== 'undefined') {
-        // 쿠키 확인
-    } else {
-        res.redirect('/login');
-    }
-
-    // return {"userId" : 1, "nickname":}
+/* Utils */
+const findUserByEmail = (email) => {
+    const userData = loadData(userDataPath);
+    return userData["users"].find(user => user.email === email);
 }
 
+const findUserById = (id) => {
+    const userData = loadData(userDataPath);
+    return userData["users"].find(user => user.user_id === parseInt(id));
+}
+
+const findUserByNickname = (nickname) => {
+    const userData = loadData(userDataPath);
+    return userData["users"].find(user => user.nickname === nickname);
+}
+
+const makeNewUser = (email, password, nickname, profileImagePath) => {
+    return {
+        "email": email,
+        "nickname": nickname,
+        "password": password,
+        "profile_image": profileImagePath || "/images/default.png",
+        "created_at": getTimeNow(),
+        "updated_at": getTimeNow()
+    }
+}
+
+const saveNewUser = (newUser) => {
+    let userData = loadData(userDataPath);
+    let keyData = loadData(keyDataPath);
+    const userId = keyData.user_id + 1;
+    newUser.user_id = userId;  // set user_id
+    userData.users.push(newUser);  // push new user
+    saveData(userData, userDataPath);
+    keyData.user_id += 1;
+    saveData(keyData, keyDataPath);
+    return userId;
+}
+
+const patchUserContent = (user) => {
+    const userData = loadData(userDataPath);
+    const userIndex = userData["users"].findIndex(u => u.user_id === user.user_id);
+    user.updated_at = getTimeNow();
+    userData["users"][userIndex] = user;
+    saveData(userData, userDataPath);
+}
+
+const deleteUserById = (id) => {
+    const userData = loadData(userDataPath);
+    const userIndex = userData["users"].findIndex(u => u.user_id === parseInt(id));
+    const removedItem = userData["users"].splice(userIndex, 1);
+    saveData(userData, userDataPath);
+    // delete boards written by user
+    let boardData = loadData(boardDataPath);
+    const boards = boardData["boards"].filter(b => b.user_id === parseInt(id));
+    boards.forEach(board => deleteBoardById(board.board_id));
+}
+
+/* Controller */
 const login = (req, res) => {
     const requestData = req.body;
-    if(!requestData.email || !requestData.password){
-        console.log("데이터 미포함 요청");
-        jsonData = {
-            "status" : 400, "message" : "invalid", "data" :null
-        }
-        res.json(jsonData);
-        return;
-    }
-    const userData = loadData(userDataPath);
-    const user = userData["users"].find(user => user.email === requestData.email);
-    if (user === undefined){
-        jsonData = {
-            "status" : 400, "message" : "invalid", "data" :null
-        }
-        res.json(jsonData);
-        return;
-    } else if (user.password !== requestData.password){
-        jsonData = {
-            "status" : 400, "message" : "invalid", "data" :null
-        }
-        res.json(jsonData);
-        return;
-    }
-    // 쿠키 주는 코드로 수정하기
+    if(!requestData.email){res.status(400).json(makeRes(400, "invalid_user_email", null)); return;} // invalid email
+    if(!requestData.password){res.status(400).json(makeRes(400, "invalid_user_password", null)); return;} // invalid password
+    let user = findUserByEmail(requestData.email);
+    if(!user){res.status(401).json(makeRes(401, "user_not_found_for_email", null)); return;} // no user
+    if(user.password !== requestData.password){res.status(401).json(makeRes(401, "incorrect_password", null)); return;} // incorrect password
+    delete user.password;
+    // need to give cookie
     token = "I am not cookie";
-
-    data = {
-        "user_id": user.user_id,
-        "email": user.email,
-        "nickname": user.nickname,
-        "created_at": user.created_at,
-        "updated_at": user.updated_at,
-        "deleted_at": user.deleted_at,
-        "auth_token": token
-    }
-
-    jsonData = {
-        "status" : 200, "message" : "login_success", "data" : {"user" : data}
-    }
-    res.json(jsonData);
+    user.auth_token = token;
+    res.status(200).json(makeRes(200, "login_success", {"user" : user}));
 }
 
 const signUp = (req, res) => {
     const requestData = req.body;
-    if(!requestData.email || !requestData.password || !requestData.nickname){
-        console.log("데이터 미포함 요청");
-        jsonData = {
-            "status" : 400, "message" : "invalid", "data" :null
-        }
-        res.json(jsonData);
-        return;
-    }
-    let userData = loadData(userDataPath);
-    let keyData = loadData(keyDataPath);
-
-    userId = keyData.user_id + 1;
-
-    const now = new Date();
-    const localTimeString = now.toLocaleString();
-
-    newUser = {
-        "user_id": userId,
-        "email": requestData.email,
-        "nickname": requestData.nickname,
-        "password": requestData.password,
-        "profile_image": requestData.profileImagePath || "/images/default.png",
-        "created_at": localTimeString,
-        "updated_at": localTimeString
-    }
-
-    userData.users.push(newUser);
-    saveData(userData, userDataPath);
-
-    keyData.user_id += 1;
-    saveData(keyData, keyDataPath);
-
-    jsonData = {
-        "status" : 201, "message" : "register_success", "data" : null
-    }
-    res.json(jsonData);
+    if(!requestData.email){res.status(400).json(makeRes(400, "invalid_email", null)); return;} // invalid email
+    if(!requestData.nickname){res.status(400).json(makeRes(400, "invalid_nickname", null)); return;} // invalid nickname
+    if(!requestData.password){res.status(400).json(makeRes(400, "invalid_password", null)); return;} // invalid password
+    if(findUserByEmail(requestData.email)){res.status(400).json(makeRes(400, "used_email", null)); return;} // used email
+    if(findUserByNickname(requestData.nickname)){res.status(400).json(makeRes(400, "used_nickname", null)); return;} // used nickname
+    const newUser = makeNewUser(requestData.email, requestData.password, requestData.nickname, requestData.profileImagePath);
+    const userId = saveNewUser(newUser);
+    res.status(201).json(makeRes(201, "register_success", {"user_id":userId}));
 }
 
 const logout = (req, res) => {
-    // const userData = loadData(userDataPath);
-    // 로그아웃 처리
-    jsonData = {
-        "status" : 200, "message" : null, "data" : null
-    }
-    
-    // 로그아웃 후 로그인 페이지로 리디렉션
-    res.redirect('/login');
-    
-    // 로그아웃 응답
-    res.json(jsonData);
+    // need to add session control code
+    res.redirect('/login').status(200).json(makeRes(200, null, null));
 }
 
-const getUserId = (req, res) => {
-    const userData = loadData(userDataPath);
+const getUserById = (req, res) => {
     const userId = req.params.id;
-    let user = userData["users"].find(user => user.user_id === parseInt(userId));
-
+    let user = findUserById(userId);
+    if(!user) {res.status(404).json(makeRes(404, "not_found_user", null)); return;}  // user not found
     delete user.password;
-
-    jsonData = {
-        "status" : 200, "message" : null, "data" : {"user" : user}
-    }
-    res.json(jsonData);
+    res.status(200).json(makeRes(200, null, {"user" : user}));
 }
 
 const patchUser = (req, res) => {
     const requestData = req.body;
-    if(!requestData.nickname){
-        console.log("데이터 미포함 요청");
-        jsonData = {
-            "status" : 400, "message" : "invalid", "data" :null
-        }
-        res.json(jsonData);
-        return;
-    }
-
-    const userData = loadData(userDataPath);
     const userId = req.params.id;
-    const userIndex = userData["users"].findIndex(user => user.user_id === parseInt(userId));
-    
-    const now = new Date();
-    const localTimeString = now.toLocaleString();
-
-    userData["users"][userIndex].nickname = requestData.nickname;
-    userData["users"][userIndex].profile_image = requestData.profileImage || "/images/default.png";
-    userData["users"][userIndex].updated_at = localTimeString;
-
-    saveData(userData, userDataPath);
-
-    jsonData = {
-        "status" : 200, "message" : "update_user_data_success", "data" : null
-    }
-    res.json(jsonData);
+    if(!requestData.nickname){res.status(400).json(makeRes(400, "invalid_nickname", null)); return;} // invalid nickname
+    let user = findUserById(userId);
+    if(!user) {res.status(404).json(makeRes(404, "not_found_user", null)); return;}  // user not found
+    user.nickname = requestData.nickname;
+    user.profile_image = requestData.profileImage || "/images/default.png";
+    patchUserContent(user);
+    res.status(200).json(makeRes(200, "update_user_data_success", null));
 }
 
 const patchPassword = (req, res) => {
     const requestData = req.body;
-    if(!requestData.password){
-        console.log("데이터 미포함 요청");
-        jsonData = {
-            "status" : 400, "message" : "invalid", "data" :null
-        }
-        res.json(jsonData);
-        return;
-    }
-
-    const userData = loadData(userDataPath);
     const userId = req.params.id;
-    const userIndex = userData["users"].findIndex(user => user.user_id === parseInt(userId));
-    
-    const now = new Date();
-    const localTimeString = now.toLocaleString();
-
-    userData["users"][userIndex].password = requestData.password;
-    userData["users"][userIndex].updated_at = localTimeString;
-
-    saveData(userData, userDataPath);
-
-    jsonData = {
-        "status" : 200, "message" : "update_user_password_success", "data" : null
-    }
-    res.json(jsonData);
+    if(!requestData.password){res.status(400).json(makeRes(400, "invalid_password", null)); return;} // invalid password
+    let user = findUserById(userId);
+    if(!user) {res.status(404).json(makeRes(404, "not_found_user", null)); return;}  // user not found
+    user.password = requestData.password;
+    patchUserContent(user);
+    res.status(200).json(makeRes(200, "update_user_password_success", null));
 }
 
 const deleteUser = (req, res) => {
     const userData = loadData(userDataPath);
     const userId = req.params.id;
-    const userIndex = userData["users"].findIndex(user => user.user_id === parseInt(userId));
-    const removedItem = userData["users"].splice(userIndex, 1);
-    saveData(userData, userDataPath);
-
-    // post 삭제, comment 삭제
-    let boardData = loadData(boardDataPath);
-    let commentData = loadData(commentDataPath);
-    const boards = boardData["boards"].filter(item => item.user_id === parseInt(userId));
-
-    // 게시글에 연관된 댓글 삭제
-    boards.forEach(board => {
-        let boardId = board.post_id;
-        // console.log("board_id : ", boardId);
-        const boardIndex = boardData["boards"].findIndex(item => item.post_id === board.post_id);
-        // console.log("board_index : ", boardIndex);
-
-        boardData["boards"].splice(boardIndex, 1);
-
-        const comments = commentData["comments"].filter(item => item.post_id === parseInt(boardId));
-        // 게시글에 연관된 댓글 삭제
-        comments.forEach(comment => {
-            // console.log("1) comment_id : ", comment.comment_id);
-        const commentIndex = commentData["comments"].findIndex(item => item.comment_id === comment.comment_id);
-        commentData["comments"].splice(commentIndex, 1);
-        });
-    });
-
-    const comments = commentData["comments"].filter(item => item.user_id === parseInt(userId));
-    // 게시글에 연관된 댓글 삭제
-    comments.forEach(comment => {
-        // console.log("2) comment_id : ", comment.comment_id);
-        const commentIndex = commentData["comments"].findIndex(item => item.comment_id === comment.comment_id);
-        commentData["comments"].splice(commentIndex, 1);
-    });
-
-    saveData(boardData, boardDataPath);
-    saveData(commentData, commentDataPath);
-
-    jsonData = {
-        "status" : 200, "message" : "delete_user_data_success", "data" : null
-    }
-    res.json(jsonData);
+    deleteUserById(userId);
+    res.status(200).json(makeRes(204,"delete_user_success", null));
 }
 
 const authCheck = (req, res) => {
-    // 쿠키가 유효하다면, 세션 정보 넘겨주기
-    const userData = loadData(userDataPath);
-    user = userData["users"].find(user => user.user_id === 1);
-
-    const userJson =  {
-        "user_id": user.user_id,
-        "email" : user.email,
-        "nickname" : user.nickname,
-        "profile_image": user.profile_image,
-        "auth_token": "I am not cookie",
-        "auth_status" : true
-    }
-
-    jsonData = {
-        "status" : 200, "message" : null, "data" : {"user":userJson}
-    }
-    res.json(jsonData);
+    // need to add session control code
+    res.status(200).json(makeRes(200, null, null));
 }
 
 const emailCheck = (req, res) => {
-    const userData = loadData(userDataPath);
     const {email} = req.query;
-    const user = userData["users"].find(user => user.email === email);
-    console.log(user);
-    if (user !== undefined){
-        jsonData = {
-            "status" : 400, "message" : "already_exist_email", "data" :null
-        }
-        res.json(jsonData);
-        return;
-    }
-    console.log(user);
-    jsonData = {
-        "status" : 200, "message" : "available_email", "data" : null
-    }
-    res.json(jsonData);
+    const user = findUserByEmail(email);
+    if (user){res.status(400).json(makeRes(400, "already_exist_email", null)); return;}  // already used email
+    res.status(200).json(makeRes(200, "available_email", null));
 }
 
 const nicknameCheck =  (req, res) => {
-    const userData = loadData(userDataPath);
     const {nickname} = req.query;
-    const user = userData["users"].find(user => user.nickname === nickname);
-    if (user !== undefined){
-        jsonData = {
-            "status" : 400, "message" : "already_exist_nickname", "data" :null
-        }
-        res.json(jsonData);
-        return;
-    }
-    console.log(user);
-    jsonData = {
-        "status" : 200, "message" : "available_nickname", "data" : null
-    }
-    res.json(jsonData);
+    const user = findUserByNickname(nickname);
+    if (user){res.status(400).json(makeRes(400, "already_exist_nickname", null)); return;}  // already used nickname
+    res.status(200).json(makeRes(200, "available_nickname", null));
 }
 
 module.exports ={
     login,
     signUp,
     logout,
-    getUserId,
+    getUserById,
     patchUser,
     patchPassword,
     deleteUser,
