@@ -111,5 +111,6 @@ module.exports = {
     getBoardDetail,
     postBoard,
     patchBoard, 
-    deleteBoard
+    deleteBoard,
+    findBoardById
 };
