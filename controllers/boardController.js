@@ -1,31 +1,37 @@
-const {loadData, saveData} = require ('./controllerUtils.js');
+/*CHECKLIST
+[ ] 인증 인가 구현하기
+[ ] 상태코드 401, 403 추가하기
+*/
+
+const {loadData, saveData, makeRes} = require ('./controllerUtils.js');
 
 const boardDataPath = 'public/data/boards.json';
 const commentDataPath = 'public/data/comments.json';
 const keyDataPath = 'public/data/keys.json';
 
+/* utils */
+const findBoardById = (id) => {
+    const boardData = loadData(boardDataPath);
+    return boardData["boards"].find(board => board.post_id === parseInt(id));
+}
 
+const findCommentsByPostId = (id) => {
+    const commentData = loadData(commentDataPath);
+    return commentData["comments"].filter(item => item.post_id === parseInt(id));
+}
+
+/* Controller */
 const getBoards = (req, res) => {
     const boardData = loadData(boardDataPath);
-    const { offset, limit } = req.query;
-    jsonData = {
-        "status" : 200, "message" : null, "data" : boardData
-    }
-    res.json(jsonData);
+    res.status(200).json(makeRes(200, null, boardData));
 }
 
 const getBoardDetail = (req, res) => {
-    const boardData = loadData(boardDataPath);
     const boardId = req.params.id;
-    const board = boardData["boards"].find(board => board.post_id === parseInt(boardId));
-    
-    const commentData = loadData(commentDataPath);
-    const comments = commentData["comments"].filter(item => item.post_id === parseInt(boardId));
-
-    jsonData = {
-        "status" : 200, "message" : null, "data" : {"board" : board, "comments":comments}
-    }
-    res.json(jsonData);
+    const board = findBoardById(boardId);
+    if (board === undefined) {res.status(404).json(makeRes(404, "cannot_found_post", null)); return;}
+    const comments = findCommentsByPostId(boardId);
+    res.status(200).json(makeRes(200, null, {"board" : board, "comments":comments}));
 }
 
 const postBoard = (req, res) =>{

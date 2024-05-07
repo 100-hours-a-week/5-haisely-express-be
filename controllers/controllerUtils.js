@@ -19,7 +19,16 @@ const saveData = (data, filePath) => {
     }
 }
 
+const makeRes = (statusNum, message, data) => {
+    return {
+        "status" : statusNum,
+        "message" : message,
+        "data" : data
+    }
+}
+
 module.exports = {
     loadData,
-    saveData
+    saveData,
+    makeRes
 }
