@@ -1,22 +1,13 @@
 {
   "users": [
     {
-      "user_id": 11,
-      "email": "t2e333t@test.koq",
-      "nickname": "안녕밍밍밍",
-      "password": "qwer1234!Q",
-      "profile_image": "/images/default.png",
-      "created_at": "2024. 5. 4. 오후 8:08:46",
-      "updated_at": "2024. 5. 4. 오후 8:08:46"
-    },
-    {
-      "user_id": 12,
+      "user_id": 1,
       "email": "t2e33sdf3t@test.koq",
-      "nickname": "안녕밍밍dl밍",
+      "nickname": "안녕밍밍dl밍구",
       "password": "qwer1234!Q",
       "profile_image": "/images/default.png",
       "created_at": "2024. 5. 4. 오후 8:09:05",
-      "updated_at": "2024. 5. 4. 오후 8:09:05"
+      "updated_at": "2024. 5. 8. 오전 1:51:01"
     },
     {
       "user_id": 13,
@@ -71,24 +62,6 @@
       "profile_image": "/images/default.png",
       "created_at": "2024. 5. 5. 오후 11:56:58",
       "updated_at": "2024. 5. 5. 오후 11:56:58"
-    },
-    {
-      "user_id": 19,
-      "email": "t2e31133t@test.koqqqdfsaf",
-      "nickname": "이루루루dafssd",
-      "password": "1234qwer!Q",
-      "profile_image": "/images/default.png",
-      "created_at": "2024. 5. 6. 오전 12:02:56",
-      "updated_at": "2024. 5. 6. 오전 12:02:56"
-    },
-    {
-      "user_id": 20,
-      "email": "sdaff@sdafs.sadf",
-      "nickname": "이히히히힣히",
-      "password": "1234qwer!Q",
-      "profile_image": "/uploads/apple.png",
-      "created_at": "2024. 5. 6. 오후 11:44:37",
-      "updated_at": "2024. 5. 6. 오후 11:44:37"
     }
   ]
 }

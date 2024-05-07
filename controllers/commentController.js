@@ -1,6 +1,5 @@
 // CHECKLIST
-// [ ] 요청에 사용자 확인 과정 필요
-// [x] 댓글 삭제도 해야함
+// [ ] 인증 인가
 
 const {loadData, saveData, makeRes, getTimeNow} = require ('./controllerUtils.js');
 

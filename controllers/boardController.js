@@ -102,7 +102,7 @@ const deleteBoard = (req, res) => {
     const board = findBoardById(boardId);
     if (!board) {res.status(404).json(makeRes(404, "cannot_found_post", null)); return;}  // board not found
     deleteBoardById(boardId);
-    res.status(204).json(makeRes(200,"delete_post_success", null));
+    res.status(200).json(makeRes(204,"delete_post_success", null));
 }
 
 module.exports = {
@@ -111,5 +111,6 @@ module.exports = {
     postBoard,
     patchBoard, 
     deleteBoard,
-    findBoardById
+    findBoardById,
+    deleteBoardById
 };

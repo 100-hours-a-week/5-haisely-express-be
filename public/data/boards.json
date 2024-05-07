@@ -1,56 +1,30 @@
 {
   "boards": [
     {
-      "post_id": 34,
-      "post_title": "수정된 제목",
-      "post_content": "수정된 내용",
-      "user_id": 1,
-      "nickname": "테스트",
-      "created_at": "2024. 5. 7. 오전 12:07:35",
-      "updated_at": "2024. 5. 7. 오후 3:13:43",
-      "comment_count": "0",
-      "hits": "1",
-      "file_path": null,
-      "profile_image_path": "/images/default.png"
-    },
-    {
-      "post_id": 36,
-      "post_title": "이ㅣ?이이",
-      "post_content": "헤에",
-      "user_id": 1,
-      "nickname": "테스트",
-      "created_at": "2024. 5. 7. 오후 1:40:38",
-      "updated_at": "2024. 5. 7. 오후 10:06:35",
-      "comment_count": "0",
-      "hits": "1",
-      "file_path": null,
-      "profile_image_path": "/images/default.png"
-    },
-    {
-      "post_title": "게시글 제목 qlql",
-      "post_content": "게시글 내용",
-      "user_id": 1,
-      "nickname": "테스트",
-      "created_at": "2024. 5. 7. 오후 2:25:16",
-      "updated_at": "2024. 5. 7. 오후 2:25:16",
-      "comment_count": "0",
-      "hits": "1",
-      "file_path": null,
-      "profile_image_path": "/images/default.png",
-      "post_id": 37
-    },
-    {
       "post_title": "제목",
-      "post_content": "히히히히",
+      "post_content": "히히힣",
       "user_id": 1,
       "nickname": "테스트",
-      "created_at": "2024. 5. 7. 오후 10:50:53",
-      "updated_at": "2024. 5. 7. 오후 10:50:53",
+      "created_at": "2024. 5. 8. 오전 1:14:40",
+      "updated_at": "2024. 5. 8. 오전 1:53:52",
       "comment_count": "0",
       "hits": "1",
-      "file_path": "/uploads/back.png",
+      "file_path": null,
       "profile_image_path": "/images/default.png",
-      "post_id": 38
+      "post_id": 39
+    },
+    {
+      "post_title": "게시글을 적어봅시다 힛",
+      "post_content": "내용은 내용내용 구구",
+      "user_id": 1,
+      "nickname": "테스트",
+      "created_at": "2024. 5. 8. 오전 1:47:43",
+      "updated_at": "2024. 5. 8. 오전 1:48:33",
+      "comment_count": "0",
+      "hits": "1",
+      "file_path": "/uploads/main.webp",
+      "profile_image_path": "/images/default.png",
+      "post_id": 41
     }
   ]
 }
