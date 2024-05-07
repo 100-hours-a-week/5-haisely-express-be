@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 const loadData = (dataFilePath) => {
     try {
         const data = fs.readFileSync(dataFilePath, 'utf8');
