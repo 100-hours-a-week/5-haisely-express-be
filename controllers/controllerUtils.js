@@ -27,8 +27,14 @@ const makeRes = (statusNum, message, data) => {
     }
 }
 
+const getTimeNow = () => {
+    const now = new Date();
+    return now.toLocaleString();
+}
+
 module.exports = {
     loadData,
     saveData,
-    makeRes
+    makeRes,
+    getTimeNow
 }

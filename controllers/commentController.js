@@ -8,6 +8,25 @@ const boardDataPath = 'public/data/boards.json';
 const commentDataPath = 'public/data/comments.json';
 const keyDataPath = 'public/data/keys.json';
 
+/* Utils */
+const findCommentsByPostId = (id) => {
+    const commentData = loadData(commentDataPath);
+    return commentData["comments"].filter(item => item.post_id === parseInt(id));
+}
+
+const deleteCommentsByPostId = (id) => {
+    let commentData = loadData(commentDataPath);
+    // delete comments in post
+    const comments = commentData["comments"].filter(item => item.post_id === parseInt(id));
+    comments.forEach(comment => {
+        const commentIndex = commentData["comments"].findIndex(item => item.comment_id === comment.comment_id);
+        commentData["comments"].splice(commentIndex, 1);
+    });
+    saveData(commentData, commentDataPath);
+}
+
+
+/* Controller */
 const postComment = (req, res) =>{
     const requestData = req.body;
     const boardId = req.params.id;
@@ -97,5 +116,7 @@ const deleteComment = (req, res) =>{
 module.exports = {
     postComment,
     patchComment,
-    deleteComment
+    deleteComment,
+    findCommentsByPostId,
+    deleteCommentsByPostId
 }
