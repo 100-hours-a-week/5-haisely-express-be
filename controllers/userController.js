@@ -1,34 +1,20 @@
 // CHECKLIST
 // [ ] 쿠키 세션 구현
 // [ ] status 찍고 다니기
-// [ ] userId -> user_id로 바꾸기
-// [ ] 로그인 실패 구현
 
-const {loadData, saveData} = require ('./controllerUtils.js');
+const {loadData, saveData, makeRes, getTimeNow} = require ('./controllerUtils.js');
 
 const userDataPath = 'public/data/users.json';
 const keyDataPath = 'public/data/keys.json';
 const boardDataPath = 'public/data/boards.json';
 const commentDataPath = 'public/data/comments.json';
 
-const cookieConfig = {
-    httpOnly: true, 
-    maxAge: 1000000,
-    signed: true 
-};
+/* Utils */
 
-function verifyToken(req, res, next) {
-    const cookieHeader = req.headers['cookie'];
 
-    if (typeof cookieHeader !== 'undefined') {
-        // 쿠키 확인
-    } else {
-        res.redirect('/login');
-    }
 
-    // return {"userId" : 1, "nickname":}
-}
 
+/* Controller */
 const login = (req, res) => {
     const requestData = req.body;
     if(!requestData.email || !requestData.password){
@@ -54,7 +40,7 @@ const login = (req, res) => {
         res.json(jsonData);
         return;
     }
-    // 쿠키 주는 코드로 수정하기
+    // need to give cookie
     token = "I am not cookie";
 
     data = {
@@ -114,8 +100,6 @@ const signUp = (req, res) => {
 }
 
 const logout = (req, res) => {
-    // const userData = loadData(userDataPath);
-    // 로그아웃 처리
     jsonData = {
         "status" : 200, "message" : null, "data" : null
     }
