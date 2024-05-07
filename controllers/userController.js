@@ -31,7 +31,7 @@ const login = (req, res) => {
     const requestData = req.body;
     if(!requestData.email){res.status(400).json(makeRes(400, "invalid_user_email", null)); return;} // invalid email
     if(!requestData.password){res.status(400).json(makeRes(400, "invalid_user_password", null)); return;} // invalid password
-    const user = findUserByEmail(requestData.email);
+    let user = findUserByEmail(requestData.email);
     if(!user){res.status(401).json(makeRes(401, "user_not_found_for_email", null)); return;} // no user
     if(user.password !== requestData.password){res.status(401).json(makeRes(401, "incorrect_password", null)); return;} // incorrect password
     delete user.password;
@@ -86,17 +86,12 @@ const logout = (req, res) => {
     res.redirect('/login').res(200).json(makeRes(200, null, null));
 }
 
-const getUserId = (req, res) => {
-    const userData = loadData(userDataPath);
+const getUserById = (req, res) => {
     const userId = req.params.id;
-    let user = userData["users"].find(user => user.user_id === parseInt(userId));
-
+    let user = findUserById(userId);
+    if(!user) {res.status(404).json(makeRes(404, "not_found_user", null)); return;}  // user not found
     delete user.password;
-
-    jsonData = {
-        "status" : 200, "message" : null, "data" : {"user" : user}
-    }
-    res.json(jsonData);
+    res.status(200).json(makeRes(200, null, {"user" : user}));
 }
 
 const patchUser = (req, res) => {
@@ -243,7 +238,7 @@ module.exports ={
     login,
     signUp,
     logout,
-    getUserId,
+    getUserById,
     patchUser,
     patchPassword,
     deleteUser,
