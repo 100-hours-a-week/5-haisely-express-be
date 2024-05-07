@@ -1,44 +1,14 @@
 {
   "comments": [
     {
-      "comment_id": 30,
-      "comment_content": "최고예요 dd",
+      "comment_content": "saff",
       "post_id": 34,
       "user_id": 1,
       "nickname": "테스트",
-      "created_at": "2024. 5. 7. 오후 1:41:28",
-      "updated_at": "2024. 5. 7. 오후 10:04:05",
-      "profile_image_path": "/images/default.png"
-    },
-    {
-      "comment_id": 29,
-      "comment_content": "아니 댓글 쓰라고 우웅",
-      "post_id": 34,
-      "user_id": 1,
-      "nickname": "테스트",
-      "created_at": "2024. 5. 7. 오후 1:40:26",
-      "updated_at": "2024. 5. 7. 오후 10:05:26",
-      "profile_image_path": "/images/default.png"
-    },
-    {
-      "comment_id": 30,
-      "comment_content": "최고예요",
-      "post_id": 34,
-      "user_id": 1,
-      "nickname": "테스트",
-      "created_at": "2024. 5. 7. 오후 1:41:28",
-      "updated_at": "2024. 5. 7. 오후 1:41:28",
-      "profile_image_path": "/images/default.png"
-    },
-    {
-      "comment_id": 31,
-      "comment_content": "댓글쓰기\n",
-      "post_id": 34,
-      "user_id": 1,
-      "nickname": "테스트",
-      "created_at": "2024. 5. 7. 오후 1:44:34",
-      "updated_at": "2024. 5. 7. 오후 1:44:34",
-      "profile_image_path": "/images/default.png"
+      "created_at": "2024. 5. 7. 오후 10:35:42",
+      "updated_at": "2024. 5. 7. 오후 10:35:42",
+      "profile_image_path": "/images/default.png",
+      "comment_id": 38
     }
   ]
 }

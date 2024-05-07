@@ -5,7 +5,7 @@
 */
 
 const {loadData, saveData, makeRes, getTimeNow} = require ('./controllerUtils.js');
-const CommentController = require('../controllers/commentController');
+const {deleteCommentsByPostId,findCommentsByPostId } = require('./commentController');
 
 const boardDataPath = 'public/data/boards.json';
 const keyDataPath = 'public/data/keys.json';
@@ -60,7 +60,7 @@ const deleteBoardById = (id) => {
     const boardIndex = boardData["boards"].findIndex(board => board.post_id === parseInt(id));
     boardData["boards"].splice(boardIndex, 1);
     saveData(boardData, boardDataPath);
-    CommentController.deleteCommentsByPostId(id);
+    deleteCommentsByPostId(id);
 }
 
 /* Controller */
@@ -73,7 +73,7 @@ const getBoardDetail = (req, res) => {
     const boardId = req.params.id;
     const board = findBoardById(boardId);
     if (!board) {res.status(404).json(makeRes(404, "cannot_found_post", null)); return;}  // board not found
-    const comments = CommentController.findCommentsByPostId(boardId);
+    const comments = findCommentsByPostId(boardId);
     res.status(200).json(makeRes(200, null, {"board" : board, "comments":comments}));
 }
 

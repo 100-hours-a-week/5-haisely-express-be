@@ -3,8 +3,8 @@
 // [x] 댓글 삭제도 해야함
 
 const {loadData, saveData, makeRes, getTimeNow} = require ('./controllerUtils.js');
-const boardController = require('../controllers/boardController');
 
+const boardDataPath = 'public/data/boards.json';
 const commentDataPath = 'public/data/comments.json';
 const keyDataPath = 'public/data/keys.json';
 
@@ -37,7 +37,8 @@ const saveNewComment = (newComment) => {
     let keyData = loadData(keyDataPath);
     const commentId = keyData.comment_id + 1;
     newComment.comment_id = commentId; // set comment_id
-    saveData(commentData, commentDataPath); // push new comment
+    commentData.comments.push(newComment); // push new comment
+    saveData(commentData, commentDataPath); 
     keyData.comment_id += 1;
     saveData(keyData, keyDataPath);
     return commentId;
@@ -72,7 +73,8 @@ const postComment = (req, res) =>{
     const requestData = req.body;
     const postId = req.params.id;
     if(!requestData.commentContent){res.status(400).json(makeRes(400, "invalid_comment_content", null)); return;} // invalid content
-    const board = boardController.findBoardById(postId);
+    const boardData = loadData(boardDataPath);
+    const board = boardData["boards"].find(board => board.post_id === parseInt(postId));
     if (!board) {res.status(404).json(makeRes(404, "cannot_found_post", null)); return;}  // board not found
     // need to send user data
     const newComment = makeNewComment(null, postId,requestData.commentContent);
@@ -95,7 +97,7 @@ const deleteComment = (req, res) =>{
     const comment = findCommentsByCommentId(commentId);
     if (!comment) {res.status(404).json(makeRes(404, "cannot_found_comment", null)); return;}  // comment not found
     deleteCommentById(commentId);
-    res.status(204).json(makeRes(204, "delete_post_success", null));
+    res.status(200).json(makeRes(204, "delete_post_success", null));
 }
 
 module.exports = {
