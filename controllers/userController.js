@@ -77,15 +77,8 @@ const signUp = (req, res) => {
 }
 
 const logout = (req, res) => {
-    jsonData = {
-        "status" : 200, "message" : null, "data" : null
-    }
-    
-    // 로그아웃 후 로그인 페이지로 리디렉션
-    res.redirect('/login');
-    
-    // 로그아웃 응답
-    res.json(jsonData);
+    // need to add session control code
+    res.redirect('/login').res(200).json(makeRes(200, null, null));
 }
 
 const getUserId = (req, res) => {
