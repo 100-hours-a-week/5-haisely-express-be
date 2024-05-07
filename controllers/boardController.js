@@ -1,7 +1,6 @@
 /*CHECKLIST
 [ ] 인증 인가 구현하기
 [ ] 상태코드 401, 403 추가하기
-[ ] 모든 응답 에러에 500 적용하기 -> 어케하징
 */
 
 const {loadData, saveData, makeRes, getTimeNow} = require ('./controllerUtils.js');
