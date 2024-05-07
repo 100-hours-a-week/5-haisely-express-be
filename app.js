@@ -20,6 +20,10 @@ app.use(session({
     cookie: { secure: true },
 }));
 
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json(makeRes(500, "internal_server_error", null));
+});
 
 // 웹 서버가 사용할 포트 번호를 정의합니다.
 const port = 3001;
