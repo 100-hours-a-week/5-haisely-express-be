@@ -10,53 +10,30 @@ const boardDataPath = 'public/data/boards.json';
 const commentDataPath = 'public/data/comments.json';
 
 /* Utils */
+const findUserByEmail = (email) => {
+    const userData = loadData(userDataPath);
+    return userData["users"].find(user => user.email === email);
+}
 
-
+const findUserById = (id) => {
+    const userData = loadData(userDataPath);
+    return userData["users"].find(user => user.user_id === parseInt(id));
+}
 
 
 /* Controller */
 const login = (req, res) => {
     const requestData = req.body;
-    if(!requestData.email || !requestData.password){
-        console.log("데이터 미포함 요청");
-        jsonData = {
-            "status" : 400, "message" : "invalid", "data" :null
-        }
-        res.json(jsonData);
-        return;
-    }
-    const userData = loadData(userDataPath);
-    const user = userData["users"].find(user => user.email === requestData.email);
-    if (user === undefined){
-        jsonData = {
-            "status" : 400, "message" : "invalid", "data" :null
-        }
-        res.json(jsonData);
-        return;
-    } else if (user.password !== requestData.password){
-        jsonData = {
-            "status" : 400, "message" : "invalid", "data" :null
-        }
-        res.json(jsonData);
-        return;
-    }
+    if(!requestData.email){res.status(400).json(makeRes(400, "invalid_user_email", null)); return;} // invalid email
+    if(!requestData.password){res.status(400).json(makeRes(400, "invalid_user_password", null)); return;} // invalid password
+    const user = findUserByEmail(requestData.email);
+    if(!user){res.status(401).json(makeRes(401, "user_not_found_for_email", null)); return;} // no user
+    if(user.password !== requestData.password){res.status(401).json(makeRes(401, "incorrect_password", null)); return;} // incorrect password
+    delete user.password;
     // need to give cookie
     token = "I am not cookie";
-
-    data = {
-        "user_id": user.user_id,
-        "email": user.email,
-        "nickname": user.nickname,
-        "created_at": user.created_at,
-        "updated_at": user.updated_at,
-        "deleted_at": user.deleted_at,
-        "auth_token": token
-    }
-
-    jsonData = {
-        "status" : 200, "message" : "login_success", "data" : {"user" : data}
-    }
-    res.json(jsonData);
+    user.auth_token = token;
+    res.status(200).json(makeRes(200, "login_success", {"user" : user}));
 }
 
 const signUp = (req, res) => {
