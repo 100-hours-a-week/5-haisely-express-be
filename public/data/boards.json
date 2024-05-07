@@ -2,11 +2,11 @@
   "boards": [
     {
       "post_title": "제목",
-      "post_content": "히히",
+      "post_content": "히히힣",
       "user_id": 1,
       "nickname": "테스트",
       "created_at": "2024. 5. 8. 오전 1:14:40",
-      "updated_at": "2024. 5. 8. 오전 1:14:40",
+      "updated_at": "2024. 5. 8. 오전 1:53:52",
       "comment_count": "0",
       "hits": "1",
       "file_path": null,
@@ -14,17 +14,17 @@
       "post_id": 39
     },
     {
-      "post_title": "내용",
-      "post_content": "후후",
+      "post_title": "게시글을 적어봅시다 힛",
+      "post_content": "내용은 내용내용 구구",
       "user_id": 1,
       "nickname": "테스트",
-      "created_at": "2024. 5. 8. 오전 1:15:04",
-      "updated_at": "2024. 5. 8. 오전 1:15:04",
+      "created_at": "2024. 5. 8. 오전 1:47:43",
+      "updated_at": "2024. 5. 8. 오전 1:48:33",
       "comment_count": "0",
       "hits": "1",
-      "file_path": "/uploads/apple.png",
+      "file_path": "/uploads/main.webp",
       "profile_image_path": "/images/default.png",
-      "post_id": 40
+      "post_id": 41
     }
   ]
 }

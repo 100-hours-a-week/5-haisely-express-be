@@ -1,6 +1,5 @@
 // CHECKLIST
 // [ ] 쿠키 세션 구현
-// [ ] status 찍고 다니기
 
 const {loadData, saveData, makeRes, getTimeNow} = require ('./controllerUtils.js');
 const {deleteBoardById} = require('./boardController.js');
