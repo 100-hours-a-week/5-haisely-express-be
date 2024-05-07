@@ -84,11 +84,11 @@
     {
       "user_id": 20,
       "email": "sdaff@sdafs.sadf",
-      "nickname": "이히히히힣히",
+      "nickname": "내닉네임",
       "password": "1234qwer!Q",
-      "profile_image": "/uploads/apple.png",
+      "profile_image": "/images/default.png",
       "created_at": "2024. 5. 6. 오후 11:44:37",
-      "updated_at": "2024. 5. 6. 오후 11:44:37"
+      "updated_at": "2024. 5. 8. 오전 12:55:43"
     },
     {
       "email": "t2e333t@test.fd",

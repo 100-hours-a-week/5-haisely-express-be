@@ -48,6 +48,13 @@ const saveNewUser = (newUser) => {
     return userId;
 }
 
+const patchUserContent = (user) => {
+    const userData = loadData(userDataPath);
+    const userIndex = userData["users"].findIndex(u => u.user_id === user.user_id);
+    user.updated_at = getTimeNow();
+    userData["users"][userIndex] = user;
+    saveData(userData, userDataPath);
+}
 
 /* Controller */
 const login = (req, res) => {
@@ -91,61 +98,25 @@ const getUserById = (req, res) => {
 
 const patchUser = (req, res) => {
     const requestData = req.body;
-    if(!requestData.nickname){
-        console.log("데이터 미포함 요청");
-        jsonData = {
-            "status" : 400, "message" : "invalid", "data" :null
-        }
-        res.json(jsonData);
-        return;
-    }
-
-    const userData = loadData(userDataPath);
     const userId = req.params.id;
-    const userIndex = userData["users"].findIndex(user => user.user_id === parseInt(userId));
-    
-    const now = new Date();
-    const localTimeString = now.toLocaleString();
-
-    userData["users"][userIndex].nickname = requestData.nickname;
-    userData["users"][userIndex].profile_image = requestData.profileImage || "/images/default.png";
-    userData["users"][userIndex].updated_at = localTimeString;
-
-    saveData(userData, userDataPath);
-
-    jsonData = {
-        "status" : 200, "message" : "update_user_data_success", "data" : null
-    }
-    res.json(jsonData);
+    if(!requestData.nickname){res.status(400).json(makeRes(400, "invalid_nickname", null)); return;} // invalid nickname
+    let user = findUserById(userId);
+    if(!user) {res.status(404).json(makeRes(404, "not_found_user", null)); return;}  // user not found
+    user.nickname = requestData.nickname;
+    user.profile_image = requestData.profileImage || "/images/default.png";
+    patchUserContent(user);
+    res.status(200).json(makeRes(200, "update_user_data_success", null));
 }
 
 const patchPassword = (req, res) => {
     const requestData = req.body;
-    if(!requestData.password){
-        console.log("데이터 미포함 요청");
-        jsonData = {
-            "status" : 400, "message" : "invalid", "data" :null
-        }
-        res.json(jsonData);
-        return;
-    }
-
-    const userData = loadData(userDataPath);
     const userId = req.params.id;
-    const userIndex = userData["users"].findIndex(user => user.user_id === parseInt(userId));
-    
-    const now = new Date();
-    const localTimeString = now.toLocaleString();
-
-    userData["users"][userIndex].password = requestData.password;
-    userData["users"][userIndex].updated_at = localTimeString;
-
-    saveData(userData, userDataPath);
-
-    jsonData = {
-        "status" : 200, "message" : "update_user_password_success", "data" : null
-    }
-    res.json(jsonData);
+    if(!requestData.password){res.status(400).json(makeRes(400, "invalid_password", null)); return;} // invalid password
+    let user = findUserById(userId);
+    if(!user) {res.status(404).json(makeRes(404, "not_found_user", null)); return;}  // user not found
+    user.password = requestData.password;
+    patchUserContent(user);
+    res.status(200).json(makeRes(200, "update_user_password_success", null));
 }
 
 const deleteUser = (req, res) => {
@@ -196,23 +167,8 @@ const deleteUser = (req, res) => {
 }
 
 const authCheck = (req, res) => {
-    // 쿠키가 유효하다면, 세션 정보 넘겨주기
-    const userData = loadData(userDataPath);
-    user = userData["users"].find(user => user.user_id === 1);
-
-    const userJson =  {
-        "user_id": user.user_id,
-        "email" : user.email,
-        "nickname" : user.nickname,
-        "profile_image": user.profile_image,
-        "auth_token": "I am not cookie",
-        "auth_status" : true
-    }
-
-    jsonData = {
-        "status" : 200, "message" : null, "data" : {"user":userJson}
-    }
-    res.json(jsonData);
+    // need to add session control code
+    res.status(200).json(makeRes(200, null, null));
 }
 
 const emailCheck = (req, res) => {
