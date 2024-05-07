@@ -1,5 +1,4 @@
 # 5-haisely-express-be
-
 ```
 5-haisely-express-be
 ├─ .DS_Store
@@ -7,6 +6,8 @@
 ├─ .eslintrc
 ├─ .prettierignore
 ├─ .prettierrc.js
+5-haisely-express-be
+├─ .gitignore
 ├─ README.md
 ├─ app.js
 ├─ controllers
@@ -17,6 +18,10 @@
 │  └─ userController.js
 ├─ package-lock.json
 ├─ package.json
+├─ routes
+│  ├─ boards.js
+│  ├─ uploadImg.js
+│  └─  users.js
 └─ public
    ├─ .DS_Store
    ├─ data
