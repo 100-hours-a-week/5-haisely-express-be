@@ -1,15 +1,10 @@
-// CHECKLIST
-// [ ] 요청에 사용자 확인 과정 필요
-// [x] 댓글 삭제도 해야함
+const boardController = require('../controllers/boardController');
+const commentController = require('../controllers/commentController');
 
 const express = require('express');
 const fs = require('fs');
 
 const router = express.Router();
-
-const boardDataPath = 'public/data/boards.json';
-const commentDataPath = 'public/data/comments.json';
-const keyDataPath = 'public/data/keys.json';
 
 const loadData = (dataFilePath) => {
     try {
