@@ -45,12 +45,10 @@ const saveNewComment = (newComment) => {
 
 const patchCommentContent = (comment, content) => {
     const commentData = loadData(commentDataPath);
-    console.log(comment.content);
-    const commentIndex = commentData["comments"].findIndex(comment => comment.comment_id === parseInt(comment.comment_id));
-    console.log(commentIndex);
+    const commentIndex = commentData["comments"].findIndex(c => c.comment_id === comment.comment_id);
     comment.comment_content = content;
     comment.updated_at = getTimeNow();
-    comment["comments"][commentIndex] = comment;
+    commentData["comments"][commentIndex] = comment;
     saveData(commentData, commentDataPath);
 }
 
@@ -89,7 +87,7 @@ const patchComment = (req, res) =>{
     const comment = findCommentsByCommentId(commentId);
     if(!comment) {res.status(404).json(makeRes(404, "cannot_found_comment", null)); return;}  // comment not found
     patchCommentContent(comment, requestData.commentContent);
-    res.status(200).json(makeRes(200, "update_comment_success", {"post_id" : boardId}));
+    res.status(200).json(makeRes(200, "update_comment_success", {"comment_id" : commentId}));
 }
 
 const deleteComment = (req, res) =>{

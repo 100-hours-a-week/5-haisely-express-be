@@ -46,7 +46,7 @@ const saveNewBoard = (newBoard) => {
 
 const patchBoardContent = (board, title, content, attachFilePath) => {
     const boardData = loadData(boardDataPath);
-    const boardIndex = boardData["boards"].findIndex(board => board.post_id === parseInt(board.post_id));
+    const boardIndex = boardData["boards"].findIndex(b => b.post_id === parseInt(board.post_id));
     board.post_title = title;
     board.post_content = content;
     board.file_path = attachFilePath || null;
