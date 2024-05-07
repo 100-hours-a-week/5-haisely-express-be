@@ -20,6 +20,11 @@ const findUserById = (id) => {
     return userData["users"].find(user => user.user_id === parseInt(id));
 }
 
+const findUserByNickname = (nickname) => {
+    const userData = loadData(userDataPath);
+    return userData["users"].find(user => user.nickname === nickname);
+}
+
 
 /* Controller */
 const login = (req, res) => {
@@ -221,40 +226,17 @@ const authCheck = (req, res) => {
 }
 
 const emailCheck = (req, res) => {
-    const userData = loadData(userDataPath);
     const {email} = req.query;
-    const user = userData["users"].find(user => user.email === email);
-    console.log(user);
-    if (user !== undefined){
-        jsonData = {
-            "status" : 400, "message" : "already_exist_email", "data" :null
-        }
-        res.json(jsonData);
-        return;
-    }
-    console.log(user);
-    jsonData = {
-        "status" : 200, "message" : "available_email", "data" : null
-    }
-    res.json(jsonData);
+    const user = findUserByEmail(email);
+    if (user){res.status(400).json(makeRes(400, "already_exist_email", null)); return;}  // already used email
+    res.status(200).json(makeRes(200, "available_email", null));
 }
 
 const nicknameCheck =  (req, res) => {
-    const userData = loadData(userDataPath);
     const {nickname} = req.query;
-    const user = userData["users"].find(user => user.nickname === nickname);
-    if (user !== undefined){
-        jsonData = {
-            "status" : 400, "message" : "already_exist_nickname", "data" :null
-        }
-        res.json(jsonData);
-        return;
-    }
-    console.log(user);
-    jsonData = {
-        "status" : 200, "message" : "available_nickname", "data" : null
-    }
-    res.json(jsonData);
+    const user = findUserByNickname(nickname);
+    if (user){res.status(400).json(makeRes(400, "already_exist_nickname", null)); return;}  // already used nickname
+    res.status(200).json(makeRes(200, "available_nickname", null));
 }
 
 module.exports ={
