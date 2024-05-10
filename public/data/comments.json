@@ -9,6 +9,46 @@
       "updated_at": "2024. 5. 8. 오전 1:14:54",
       "profile_image_path": "/images/default.png",
       "comment_id": 42
+    },
+    {
+      "comment_content": "우웅",
+      "post_id": 42,
+      "user_id": 13,
+      "nickname": "마지막",
+      "created_at": "2024. 5. 10. 오후 3:46:11",
+      "updated_at": "2024. 5. 10. 오후 3:46:11",
+      "profile_image_path": "/images/default.png",
+      "comment_id": 47
+    },
+    {
+      "comment_content": "??",
+      "post_id": 42,
+      "user_id": 13,
+      "nickname": "마지막",
+      "created_at": "2024. 5. 10. 오후 3:46:30",
+      "updated_at": "2024. 5. 10. 오후 3:46:30",
+      "profile_image_path": "/images/default.png",
+      "comment_id": 48
+    },
+    {
+      "comment_content": "??",
+      "post_id": 42,
+      "user_id": 13,
+      "nickname": "마지막",
+      "created_at": "2024. 5. 10. 오후 3:46:54",
+      "updated_at": "2024. 5. 10. 오후 3:46:54",
+      "profile_image_path": "/images/default.png",
+      "comment_id": 49
+    },
+    {
+      "comment_content": "글",
+      "post_id": 42,
+      "user_id": 13,
+      "nickname": "마지막",
+      "created_at": "2024. 5. 10. 오후 3:47:31",
+      "updated_at": "2024. 5. 10. 오후 3:47:31",
+      "profile_image_path": "/images/default.png",
+      "comment_id": 50
     }
   ]
 }

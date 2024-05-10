@@ -19,15 +19,14 @@ const findCommentsByPostId = (id) => {
 }
 
 const makeNewComment = (user, postId, content) => {
-    // need to use user data
     return {
         "comment_content": content,
         "post_id": parseInt(postId),
-        "user_id": 1,  // 수정
-        "nickname": "테스트",  // 수정
+        "user_id": user.user_id,  
+        "nickname": user.nickname,
         "created_at": getTimeNow(),
         "updated_at": getTimeNow(),
-        "profile_image_path": "/images/default.png"  // 수정
+        "profile_image_path": user.profile_image_path || "/images/default.png"
     }
 }
 
@@ -75,8 +74,8 @@ const postComment = (req, res) =>{
     const boardData = loadData(boardDataPath);
     const board = boardData["boards"].find(board => board.post_id === parseInt(postId));
     if (!board) {res.status(404).json(makeRes(404, "cannot_found_post", null)); return;}  // board not found
-    // need to send user data
-    const newComment = makeNewComment(null, postId,requestData.commentContent);
+    const user = req.session.user
+    const newComment = makeNewComment(user, postId,requestData.commentContent);
     const commentId = saveNewComment(newComment);
     res.status(201).json(makeRes(201, "write_comment_success", {"comment_id" : commentId}));
 }
