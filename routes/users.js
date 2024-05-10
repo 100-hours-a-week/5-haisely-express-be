@@ -1,5 +1,6 @@
 const express = require('express');
 const userController = require('../controllers/userController');
+const {authenticateMiddleware} = require('../controllers/AuthUtils');
 
 const router = express.Router();
 
@@ -10,22 +11,22 @@ router.post('/login', userController.login);
 router.post('/signup', userController.signUp);
 
 // 로그아웃
-router.post('/logout', userController.logout);
+router.post('/logout', authenticateMiddleware, userController.logout);
 
 // 회원 정보 조회
-router.get('/:id', userController.getUserById);
+router.get('/', authenticateMiddleware, userController.getUserById);
 
 // 회원 정보 수정
-router.patch('/:id', userController.patchUser);
+router.patch('/', authenticateMiddleware, userController.patchUser);
 
 // 비밀번호 변경
-router.patch('/:id/password', userController.patchPassword);
+router.patch('/password', authenticateMiddleware, userController.patchPassword);
 
 // 회원 정보 삭제
-router.delete('/:id', userController.deleteUser);
+router.delete('/', authenticateMiddleware, userController.deleteUser);
 
 // 로그인 상태 확인
-router.get('/auth/check', userController.authCheck);
+router.get('/auth/check', authenticateMiddleware, userController.authCheck);
 
 // 이메일 중복 체크
 router.get('/email/check', userController.emailCheck);

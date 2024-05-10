@@ -1,5 +1,5 @@
 // CHECKLIST
-// [ ] 쿠키 세션 구현
+// [x] 쿠키 세션 구현
 
 const {loadData, saveData, makeRes, getTimeNow} = require ('./controllerUtils.js');
 const {deleteBoardById} = require('./boardController.js');
@@ -76,9 +76,8 @@ const login = (req, res) => {
     if(!user){res.status(401).json(makeRes(401, "user_not_found_for_email", null)); return;} // no user
     if(user.password !== requestData.password){res.status(401).json(makeRes(401, "incorrect_password", null)); return;} // incorrect password
     delete user.password;
-    // need to give cookie
-    token = "I am not cookie";
-    user.auth_token = token;
+    req.session.user = user;
+    user.auth_token = req.sessionID;
     res.status(200).json(makeRes(200, "login_success", {"user" : user}));
 }
 
@@ -95,12 +94,18 @@ const signUp = (req, res) => {
 }
 
 const logout = (req, res) => {
-    // need to add session control code
-    res.redirect('/login').status(200).json(makeRes(200, null, null));
+    req.session.destroy(error => {
+        if (error) {
+            return res.status(500).json(makeRes(500, "로그아웃 중 문제가 발생했습니다.", null));
+        }
+
+        return res.status(200).json(makeRes(200, null, null));
+    });
 }
 
 const getUserById = (req, res) => {
-    const userId = req.params.id;
+    const userId = req.session.user.user_id;
+    console.log(userId);
     let user = findUserById(userId);
     if(!user) {res.status(404).json(makeRes(404, "not_found_user", null)); return;}  // user not found
     delete user.password;
@@ -109,7 +114,7 @@ const getUserById = (req, res) => {
 
 const patchUser = (req, res) => {
     const requestData = req.body;
-    const userId = req.params.id;
+    const userId = req.session.user.user_id;
     if(!requestData.nickname){res.status(400).json(makeRes(400, "invalid_nickname", null)); return;} // invalid nickname
     let user = findUserById(userId);
     if(!user) {res.status(404).json(makeRes(404, "not_found_user", null)); return;}  // user not found
@@ -121,7 +126,7 @@ const patchUser = (req, res) => {
 
 const patchPassword = (req, res) => {
     const requestData = req.body;
-    const userId = req.params.id;
+    const userId = req.session.user.user_id;
     if(!requestData.password){res.status(400).json(makeRes(400, "invalid_password", null)); return;} // invalid password
     let user = findUserById(userId);
     if(!user) {res.status(404).json(makeRes(404, "not_found_user", null)); return;}  // user not found
@@ -131,8 +136,7 @@ const patchPassword = (req, res) => {
 }
 
 const deleteUser = (req, res) => {
-    const userData = loadData(userDataPath);
-    const userId = req.params.id;
+    const userId = req.session.user.user_id;
     deleteUserById(userId);
     res.status(200).json(makeRes(204,"delete_user_success", null));
 }

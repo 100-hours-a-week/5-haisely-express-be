@@ -1,6 +1,7 @@
 /*CHECKLIST
-[ ] 인증 인가 구현하기
-[ ] 상태코드 401, 403 추가하기
+[x] 인증 인가 구현하기
+[x] 상태코드 401, 403 추가하기
+[x] patch, delete 인가 구현하기
 */
 
 const {loadData, saveData, makeRes, getTimeNow} = require ('./controllerUtils.js');
@@ -16,18 +17,17 @@ const findBoardById = (id) => {
 }
 
 const makeNewBoard = (user, postTitle, postContent, attachFilePath) => {
-    // need to use user data
     return {
         "post_title": postTitle,
         "post_content": postContent,
-        "user_id": 1,  // 수정
-        "nickname": "테스트",  // 수정
+        "user_id": user.user_id,  
+        "nickname": user.nickname, 
         "created_at": getTimeNow(),
         "updated_at": getTimeNow(),
         "comment_count": "0",
         "hits": "1",
         "file_path": attachFilePath  || null,
-        "profile_image_path": "/images/default.png"  // 수정
+        "profile_image_path": user.profile_image ||"/images/default.png" 
     };
 }
 
@@ -65,6 +65,7 @@ const deleteBoardById = (id) => {
 /* Controller */
 const getBoards = (req, res) => {
     const boardData = loadData(boardDataPath);
+    console.log(req.sessionID);
     res.status(200).json(makeRes(200, null, boardData));
 }
 
@@ -80,8 +81,8 @@ const postBoard = (req, res) =>{
     const requestData = req.body;
     if(!requestData.postTitle){res.status(400).json(makeRes(400, "invalid_post_title", null)); return;} // invalid title
     if(!requestData.postContent){res.status(400).json(makeRes(400, "invalid_post_content", null)); return;} // invalid content
-    // need to send user data
-    const newPost = makeNewBoard(null, requestData.postTitle, requestData.postContent, requestData.attachFilePath);
+    const user = req.session.user
+    const newPost = makeNewBoard(user, requestData.postTitle, requestData.postContent, requestData.attachFilePath);
     const postId = saveNewBoard(newPost);
     res.status(201).json(makeRes(201, "write_post_success", {"post_id" : postId}));
 }
