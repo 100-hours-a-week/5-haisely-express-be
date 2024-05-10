@@ -1,7 +1,7 @@
 /*CHECKLIST
-[ ] 인증 인가 구현하기
-[ ] 상태코드 401, 403 추가하기
-[ ] patch, delete 인가 구현하기
+[x] 인증 인가 구현하기
+[x] 상태코드 401, 403 추가하기
+[x] patch, delete 인가 구현하기
 */
 
 const {loadData, saveData, makeRes, getTimeNow} = require ('./controllerUtils.js');

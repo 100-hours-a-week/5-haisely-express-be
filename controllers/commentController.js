@@ -1,5 +1,5 @@
 // CHECKLIST
-// [ ] 인증 인가
+// [x] 인증 인가
 
 const {loadData, saveData, makeRes, getTimeNow} = require ('./controllerUtils.js');
 
@@ -103,5 +103,6 @@ module.exports = {
     patchComment,
     deleteComment,
     findCommentsByPostId,
-    deleteCommentsByPostId
+    deleteCommentsByPostId,
+    findCommentsByCommentId
 }

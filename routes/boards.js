@@ -1,6 +1,6 @@
 const boardController = require('../controllers/boardController');
 const commentController = require('../controllers/commentController');
-const {authenticateMiddleware} = require('../controllers/AuthenticationUtils');
+const {authenticateMiddleware, authorizeBoardMiddleware, authorizeCommentMiddleware} = require('../controllers/AuthUtils');
 
 const express = require('express');
 
@@ -16,18 +16,18 @@ router.get('/:id', authenticateMiddleware, boardController.getBoardDetail);
 router.post("/", authenticateMiddleware, boardController.postBoard);
 
 // 게시글 수정 "/:id"
-router.patch("/:id", authenticateMiddleware, boardController.patchBoard);
+router.patch("/:id", authenticateMiddleware, authorizeBoardMiddleware, boardController.patchBoard);
 
 // 게시글 삭제 "/:id"
-router.delete("/:id", authenticateMiddleware, boardController.deleteBoard);
+router.delete("/:id", authenticateMiddleware, authorizeBoardMiddleware, boardController.deleteBoard);
 
 // 댓글 추가 "/:id/comments"
 router.post("/:id/comments", authenticateMiddleware, commentController.postComment);
 
 // 댓글 수정 "/{post_id}/comments/{comment_id}" *
-router.patch("/:postId/comments/:commentId", authenticateMiddleware, commentController.patchComment);
+router.patch("/:postId/comments/:commentId", authenticateMiddleware, authorizeCommentMiddleware, commentController.patchComment);
 
 // 댓글 삭제 "/{post_id}/comments/{comment_id}" *
-router.delete("/:postId/comments/:commentId", authenticateMiddleware, commentController.deleteComment);
+router.delete("/:postId/comments/:commentId", authenticateMiddleware, authorizeCommentMiddleware, commentController.deleteComment);
 
 module.exports = router;
