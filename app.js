@@ -12,13 +12,22 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(cors());
-app.use(session({
-	secret: 'my secret',
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: true },
+app.use(cors({
+    origin: ['http://localhost:3000'], 
+    credentials: true  
 }));
+app.use(
+    session({
+        secret: 'yourSecretKey',
+        saveUninitialized: true,
+        resave: false,
+        cookie: {
+            maxAge: 24 * 60 * 60 * 1000, // 쿠키 유효 시간 (예: 1일)
+            secure: false 
+        },
+    }),
+);
+
 
 app.use((err, req, res, next) => {
     console.error(err.stack);
