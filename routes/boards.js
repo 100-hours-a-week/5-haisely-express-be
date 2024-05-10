@@ -21,6 +21,7 @@ router.patch("/:id", authenticateMiddleware, authorizeBoardMiddleware, boardCont
 // 게시글 삭제 "/:id"
 router.delete("/:id", authenticateMiddleware, authorizeBoardMiddleware, boardController.deleteBoard);
 
+
 // 댓글 추가 "/:id/comments"
 router.post("/:id/comments", authenticateMiddleware, commentController.postComment);
 
