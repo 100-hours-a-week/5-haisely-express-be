@@ -65,6 +65,7 @@ const deleteBoardById = (id) => {
 /* Controller */
 const getBoards = (req, res) => {
     const boardData = loadData(boardDataPath);
+    console.log(req.sessionID);
     res.status(200).json(makeRes(200, null, boardData));
 }
 

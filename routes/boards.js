@@ -1,12 +1,13 @@
 const boardController = require('../controllers/boardController');
 const commentController = require('../controllers/commentController');
+const {authenticateMiddleware} = require('../controllers/AuthenticationUtils');
 
 const express = require('express');
 
 const router = express.Router();
 
 // 게시글 목록 조회
-router.get('/', boardController.getBoards);
+router.get('/',  authenticateMiddleware, boardController.getBoards);
 
 // 게시글 상세 조회 + 댓글 목록 조회
 router.get('/:id', boardController.getBoardDetail);
