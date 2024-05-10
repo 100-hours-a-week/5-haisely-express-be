@@ -94,13 +94,12 @@ const signUp = (req, res) => {
 }
 
 const logout = (req, res) => {
-    // need to add session control code
     request.session.destroy(error => {
         if (error) {
             return res.status(500).json(makeRes(500, "로그아웃 중 문제가 발생했습니다.", null));
         }
 
-        return res.redirect('/login').status(200).json(makeRes(200, null, null));
+        return res.status(200).json(makeRes(200, null, null)).redirect('/login');
     });
 }
 
