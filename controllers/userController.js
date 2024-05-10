@@ -1,5 +1,5 @@
 // CHECKLIST
-// [ ] 쿠키 세션 구현
+// [x] 쿠키 세션 구현
 
 const {loadData, saveData, makeRes, getTimeNow} = require ('./controllerUtils.js');
 const {deleteBoardById} = require('./boardController.js');
@@ -94,7 +94,7 @@ const signUp = (req, res) => {
 }
 
 const logout = (req, res) => {
-    request.session.destroy(error => {
+    req.session.destroy(error => {
         if (error) {
             return res.status(500).json(makeRes(500, "로그아웃 중 문제가 발생했습니다.", null));
         }
