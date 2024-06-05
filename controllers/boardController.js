@@ -19,9 +19,9 @@ const getBoards = (req, res) => {
     res.status(200).json(makeRes(200, null, boardData));
 }
 
-const getBoardDetail = (req, res) => {
+const getBoardDetail = async (req, res) => {
     const boardId = req.params.id;
-    const board = findBoardById(boardId);
+    const board = await findBoardById(boardId);
     if (!board) {res.status(404).json(makeRes(404, "cannot_found_post", null)); return;}  // board not found
     // const comments = findCommentsByPostId(boardId);
     const comments = []

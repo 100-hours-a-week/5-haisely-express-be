@@ -3,22 +3,33 @@ const db = require('../secret/database');
 const conn = db.init();
 
 
+
+
 /* Utils */
-const findBoardById = (id) => {
-    var sql = 'SELECT * from boards WHERE board_id=?';
-    var params = [id]
-    const result = conn.query(sql, params, function(err, rows, fields){//두번째 인자에 배열로 된 값을 넣어줄 수 있다.
-        if(err){
-            console.log(err);
-        } else {
-            console.log(rows[0]);
-            return rows[0];
-        }
-        return null;
+function queryDatabase(sql, params) {
+    return new Promise((resolve, reject) => {
+        conn.query(sql, params, function(err, rows, fields) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(rows);
+            }
+        });
     });
-    return result;
 }
 
+/* Utils */
+const findBoardById = async (id) => {
+    var sql = 'SELECT * from boards WHERE board_id=?';
+    var params = [id];
+    try {
+        const result = await queryDatabase(sql, params);
+        return result[0];
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
+}
 const makeNewBoard = (user, postTitle, postContent, attachFilePath) => {
     // return {
     //     "post_title": postTitle,
