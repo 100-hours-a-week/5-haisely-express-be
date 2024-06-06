@@ -3,8 +3,6 @@ const db = require('../secret/database');
 const conn = db.init();
 
 
-
-
 /* Utils */
 function queryDatabase(sql, params) {
     return new Promise((resolve, reject) => {

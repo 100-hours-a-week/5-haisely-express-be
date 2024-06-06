@@ -5,8 +5,8 @@
 */
 
 const {loadData, saveData, makeRes, getTimeNow} = require ('./controllerUtils.js');
-const {deleteCommentsByPostId,findCommentsByPostId } = require('./commentController');
 const {findBoardById, makeNewBoard, saveNewBoard, patchBoardContent, deleteBoardById} = require('../models/Boards.js')
+const {findCommentsByPostId, deleteCommentsByPostId} = require('../models/Comments.js')
 
 const boardDataPath = 'public/data/boards.json';
 const keyDataPath = 'public/data/keys.json';
@@ -23,8 +23,8 @@ const getBoardDetail = async (req, res) => {
     const boardId = req.params.id;
     const board = await findBoardById(boardId);
     if (!board) {res.status(404).json(makeRes(404, "cannot_found_post", null)); return;}  // board not found
-    // const comments = findCommentsByPostId(boardId);
-    const comments = []
+    const comments = await findCommentsByPostId(boardId);
+    console.log(comments);
     res.status(200).json(makeRes(200, null, {"board" : board, "comments":comments}));
 }
 
