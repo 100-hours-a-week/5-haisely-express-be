@@ -5,7 +5,7 @@
 */
 
 const {loadData, saveData, makeRes, getTimeNow} = require ('./controllerUtils.js');
-const {findBoardById, makeNewBoard, saveNewBoard, patchBoardContent, deleteBoardById} = require('../models/Boards.js')
+const {getAllBoards, findBoardById, makeNewBoard, saveNewBoard, patchBoardContent, deleteBoardById} = require('../models/Boards.js')
 const {findCommentsByPostId, deleteCommentsByPostId} = require('../models/Comments.js')
 
 const boardDataPath = 'public/data/boards.json';
@@ -13,9 +13,8 @@ const keyDataPath = 'public/data/keys.json';
 
 
 /* Controller */
-const getBoards = (req, res) => {
-    const boardData = loadData(boardDataPath);
-    console.log(req.sessionID);
+const getBoards = async (req, res) => {
+    const boardData = await getAllBoards();
     res.status(200).json(makeRes(200, null, boardData));
 }
 
