@@ -52,32 +52,33 @@ const findBoardById = async (id) => {
         return null;
     }
 }
-const makeNewBoard = (user, postTitle, postContent, attachFilePath) => {
-    // return {
-    //     "post_title": postTitle,
-    //     "post_content": postContent,
-    //     "user_id": user.user_id,  
-    //     "nickname": user.nickname, 
-    //     "created_at": getTimeNow(),
-    //     "updated_at": getTimeNow(),
-    //     "comment_count": "0",
-    //     "hits": "1",
-    //     "file_path": attachFilePath  || null,
-    //     "profile_image_path": user.profile_image ||"/images/default.png" 
-    // };
+const makeNewBoard = async (user, boardTitle, boardContent, attachFilePath) => {
+    const startTransaction = "START TRANSACTION;";
+    const insertImage = "INSERT INTO images (file_url) VALUES (?);";
+    const insertBoardWithImage = "INSERT INTO boards (user_id, image_id, title, content) VALUES (?, LAST_INSERT_ID(), ?, ?);";
+    const insertBoard = "INSERT INTO boards (user_id, title, content) VALUES (?, ?, ?);";
+    const commitTransaction = "COMMIT;";
+
+    try {
+        await queryDatabase(startTransaction);
+
+        if (attachFilePath != null){
+            await queryDatabase(insertImage, [attachFilePath]);
+            await queryDatabase(insertBoardWithImage, [user.user_id, boardTitle, boardContent]);
+        } else {
+            await queryDatabase(insertBoard, [user.user_id, boardTitle, boardContent]);
+        }
+
+        await queryDatabase(commitTransaction);
+        console.log('Transaction completed successfully');
+
+    } catch (error) {
+        await queryDatabase("ROLLBACK;");
+        console.error('Transaction failed, rollback executed', error);
+        return null;
+    }
 }
 
-const saveNewBoard = (newBoard) => {
-    // let boardData = loadData(boardDataPath);
-    // let keyData = loadData(keyDataPath);
-    // const postId = keyData.board_id + 1;
-    // newBoard.post_id = postId;  // set post_id
-    // boardData.boards.push(newBoard);  // push new board
-    // saveData(boardData, boardDataPath);
-    // keyData.board_id += 1;
-    // saveData(keyData, keyDataPath);
-    // return postId;
-}
 
 const patchBoardContent = (board, title, content, attachFilePath) => {
     // const boardData = loadData(boardDataPath);
@@ -102,7 +103,6 @@ module.exports = {
     getAllBoards,
     findBoardById,
     makeNewBoard,
-    saveNewBoard,
     patchBoardContent,
     deleteBoardById
 };

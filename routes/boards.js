@@ -20,7 +20,8 @@ router.get('/',  boardController.getBoards);
 router.get('/:id', boardController.getBoardDetail);
 
 // 게시글 추가 "/"
-router.post("/", authenticateMiddleware, boardController.postBoard);
+// router.post("/", authenticateMiddleware, boardController.postBoard);
+router.post("/", boardController.postBoard);
 
 // 게시글 수정 "/:id"
 router.patch("/:id", authenticateMiddleware, authorizeBoardMiddleware, boardController.patchBoard);

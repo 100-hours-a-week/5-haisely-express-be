@@ -5,7 +5,7 @@
 */
 
 const {loadData, saveData, makeRes, getTimeNow} = require ('./controllerUtils.js');
-const {getAllBoards, findBoardById, makeNewBoard, saveNewBoard, patchBoardContent, deleteBoardById} = require('../models/Boards.js')
+const {getAllBoards, findBoardById, makeNewBoard, patchBoardContent, deleteBoardById} = require('../models/Boards.js')
 const {findCommentsByPostId, deleteCommentsByPostId} = require('../models/Comments.js')
 
 const boardDataPath = 'public/data/boards.json';
@@ -31,9 +31,9 @@ const postBoard = (req, res) =>{
     const requestData = req.body;
     if(!requestData.postTitle){res.status(400).json(makeRes(400, "invalid_post_title", null)); return;} // invalid title
     if(!requestData.postContent){res.status(400).json(makeRes(400, "invalid_post_content", null)); return;} // invalid content
-    const user = req.session.user
-    const newPost = makeNewBoard(user, requestData.postTitle, requestData.postContent, requestData.attachFilePath);
-    const postId = saveNewBoard(newPost);
+    // const user = req.session.user
+    const user = {user_id: 1}
+    const postId = makeNewBoard(user, requestData.postTitle, requestData.postContent, requestData.attachFilePath);
     res.status(201).json(makeRes(201, "write_post_success", {"post_id" : postId}));
 }
 
