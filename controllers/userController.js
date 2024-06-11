@@ -41,24 +41,24 @@ const logout = (req, res) => {
     });
 }
 
-const getUserById = (req, res) => {
-    const userId = req.session.user.user_id;
+const getUserById = async (req, res) => {
+    // const userId = req.session.user.user_id;
+    const userId =1;
     console.log(userId);
-    let user = findUserById(userId);
+    let user = await findUserById(userId);
     if(!user) {res.status(404).json(makeRes(404, "not_found_user", null)); return;}  // user not found
     delete user.password;
     res.status(200).json(makeRes(200, null, {"user" : user}));
 }
 
-const patchUser = (req, res) => {
+const patchUser = async (req, res) => {
     const requestData = req.body;
-    const userId = req.session.user.user_id;
+    // const userId = req.session.user.user_id;
+    const userId = 1;
     if(!requestData.nickname){res.status(400).json(makeRes(400, "invalid_nickname", null)); return;} // invalid nickname
-    let user = findUserById(userId);
+    let user = await findUserById(userId);
     if(!user) {res.status(404).json(makeRes(404, "not_found_user", null)); return;}  // user not found
-    user.nickname = requestData.nickname;
-    user.profile_image = requestData.profileImage || "/images/default.png";
-    patchUserContent(user);
+    patchUserContent(userId, requestData.nickname, user.profile_image);
     res.status(200).json(makeRes(200, "update_user_data_success", null));
 }
 

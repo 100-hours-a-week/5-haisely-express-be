@@ -18,7 +18,8 @@ function queryDatabase(sql, params) {
 
 /* Utils */
 const findUserByEmail = async (email) => {
-    let sql = 'SELECT * from users WHERE email=?';
+    let sql = 'SELECT * from users\
+    WHERE email=? and deleted_at is NULL;';
     let params = [email];
     try {
         const result = await queryDatabase(sql, params);
@@ -30,7 +31,8 @@ const findUserByEmail = async (email) => {
 }
 
 const findUserById = async (id) => {
-    let sql = 'SELECT * from users WHERE user_id=?';
+    let sql = 'SELECT * from users\
+    WHERE user_id=? and deleted_at is NULL;';
     let params = [id];
     try {
         const result = await queryDatabase(sql, params);
@@ -42,7 +44,8 @@ const findUserById = async (id) => {
 }
 
 const findUserByNickname = async (nickname) => {
-    let sql = 'SELECT * from users WHERE nickname=?';
+    let sql = 'SELECT * from users\
+    WHERE nickname=? and deleted_at is NULL;';
     let params = [nickname];
     try {
         const result = await queryDatabase(sql, params);
@@ -82,7 +85,34 @@ const saveNewUser = async (email, password, nickname, profileImage) => {
     }
 }
 
-const patchUserContent = (user) => {
+const patchUserContent = async (user_id, nickname, profile_image) => {
+    const startTransaction = "START TRANSACTION;";
+    const updateImage = "INSERT INTO images (file_url) VALUES (?);";
+    const updateBoardWithImage = "UPDATE users u SET u.nickname = ?, u.image_id = LAST_INSERT_ID() WHERE u.user_id = ?;";
+    const updateBoard = "UPDATE users u SET u.nickname = ?, u.image_id = ? WHERE u.user_id = ?;";
+    const commitTransaction = "COMMIT;";
+
+    try {
+        await queryDatabase(startTransaction);
+
+        if (profile_image != null){
+            await queryDatabase(updateImage, [profile_image]);
+            await queryDatabase(updateBoardWithImage, [nickname, user_id]);
+        } else {
+            await queryDatabase(updateBoard, [nickname, null, user_id]);
+        }
+
+        await queryDatabase(commitTransaction);
+        console.log('Transaction completed successfully');
+
+    } catch (error) {
+        await queryDatabase("ROLLBACK;");
+        console.error('Transaction failed, rollback executed', error);
+        return null;
+    }
+}
+
+const patchUserPassword = (password) => {
     // const userData = loadData(userDataPath);
     // const userIndex = userData["users"].findIndex(u => u.user_id === user.user_id);
     // user.updated_at = getTimeNow();
@@ -107,5 +137,6 @@ module.exports = {
     findUserByNickname,
     saveNewUser,
     patchUserContent,
+    patchUserPassword,
     deleteUserById
 };

@@ -18,7 +18,8 @@ router.post('/logout', authenticateMiddleware, userController.logout);
 router.get('/', userController.getUserById);
 
 // 회원 정보 수정
-router.patch('/', authenticateMiddleware, userController.patchUser);
+// router.patch('/', authenticateMiddleware, userController.patchUser);
+router.patch('/', userController.patchUser);
 
 // 비밀번호 변경
 router.patch('/password', authenticateMiddleware, userController.patchPassword);
