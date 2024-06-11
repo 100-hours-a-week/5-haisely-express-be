@@ -72,6 +72,7 @@ const makeNewBoard = async (user, boardTitle, boardContent, attachFilePath) => {
     const insertImage = "INSERT INTO images (file_url) VALUES (?);";
     const insertBoardWithImage = "INSERT INTO boards (user_id, image_id, title, content) VALUES (?, LAST_INSERT_ID(), ?, ?);";
     const insertBoard = "INSERT INTO boards (user_id, title, content) VALUES (?, ?, ?);";
+    const getLastInsertId = "SELECT LAST_INSERT_ID() AS board_id;";
     const commitTransaction = "COMMIT;";
 
     try {
@@ -83,9 +84,10 @@ const makeNewBoard = async (user, boardTitle, boardContent, attachFilePath) => {
         } else {
             await queryDatabase(insertBoard, [user.user_id, boardTitle, boardContent]);
         }
-
+        const result = await queryDatabase(getLastInsertId);
         await queryDatabase(commitTransaction);
         console.log('Transaction completed successfully');
+        return result[0].board_id;
 
     } catch (error) {
         await queryDatabase("ROLLBACK;");

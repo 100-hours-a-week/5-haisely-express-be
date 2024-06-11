@@ -75,21 +75,11 @@ const deleteCommentById = (id) => {
     saveData(commentData, commentDataPath);
 }
 
-const deleteCommentsByPostId = (id) => {
-    let commentData = loadData(commentDataPath);
-    // delete comments in post
-    const comments = commentData["comments"].filter(item => item.post_id === parseInt(id));
-    comments.forEach(comment => {deleteCommentById(comment.comment_id);});
-}
-
-
 
 module.exports = {
     findCommentsByCommentId,
     findCommentsByBoardId,
-    makeNewComment,
     saveNewComment,
     patchCommentContent,
-    deleteCommentById,
-    deleteCommentsByPostId
+    deleteCommentById
 };
