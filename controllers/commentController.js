@@ -1,16 +1,16 @@
 // CHECKLIST
 // [x] 인증 인가
 
-const {loadData, saveData, makeRes, getTimeNow} = require ('./controllerUtils.js');
+const {makeRes} = require ('./controllerUtils.js');
 const {findCommentsByCommentId, saveNewComment, patchCommentContent, deleteCommentById} = require('../models/Comments.js')
-const {getAllBoards, findBoardById, findBoardDetailById, makeNewBoard, patchBoardContent, deleteBoardById} = require('../models/Boards.js')
+const {findBoardById} = require('../models/Boards.js')
 
 /* Controller */
 const postComment = async (req, res) =>{
     const requestData = req.body;
     const boardId = req.params.id;
     if(!requestData.commentContent){res.status(400).json(makeRes(400, "invalid_comment_content", null)); return;} // invalid content
-    const board = findBoardById(boardId);
+    const board = await findBoardById(boardId);
     if (!board) {res.status(404).json(makeRes(404, "cannot_found_post", null)); return;}  // board not found
     // const user = req.session.user
     const user = {user_id: 1};
@@ -18,21 +18,21 @@ const postComment = async (req, res) =>{
     res.status(201).json(makeRes(201, "write_comment_success", {"comment_id" : commentId}));
 }
 
-const patchComment = (req, res) =>{
+const patchComment = async (req, res) =>{
     const requestData = req.body;
     const commentId = req.params.commentId;
     if(!requestData.commentContent){res.status(400).json(makeRes(400, "invalid_comment_content", null)); return;} // invalid content
-    const comment = findCommentsByCommentId(commentId);
+    const comment = await findCommentsByCommentId(commentId);
     if(!comment) {res.status(404).json(makeRes(404, "cannot_found_comment", null)); return;}  // comment not found
-    patchCommentContent(comment, requestData.commentContent);
+    await patchCommentContent(commentId, requestData.commentContent);
     res.status(200).json(makeRes(200, "update_comment_success", {"comment_id" : commentId}));
 }
 
-const deleteComment = (req, res) =>{
+const deleteComment = async (req, res) =>{
     const commentId = req.params.commentId;
     const comment = findCommentsByCommentId(commentId);
     if (!comment) {res.status(404).json(makeRes(404, "cannot_found_comment", null)); return;}  // comment not found
-    deleteCommentById(commentId);
+    await deleteCommentById(commentId);
     res.status(200).json(makeRes(204, "delete_post_success", null));
 }
 

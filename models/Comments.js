@@ -40,7 +40,6 @@ const findCommentsByBoardId = async (id) => {
     let params = [id];
     try {
         const result = await queryDatabase(sql, params);
-        console.log(result)
         return result;
     } catch (err) {
         console.log(err);
@@ -69,16 +68,19 @@ const saveNewComment = async (boardId, user, content) => {
     }
 }
 
-const patchCommentContent = (comment, content) => {
-    // const commentData = loadData(commentDataPath);
-    // const commentIndex = commentData["comments"].findIndex(c => c.comment_id === comment.comment_id);
-    // comment.comment_content = content;
-    // comment.updated_at = getTimeNow();
-    // commentData["comments"][commentIndex] = comment;
-    // saveData(commentData, commentDataPath);
+const patchCommentContent = async (id, content) => {
+    let sql = 'update comments set content = ? where comment_id = ?;';
+    let params = [content, id];
+    try {
+        const result = await queryDatabase(sql, params);
+        return result;
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
 }
 
-const deleteCommentById = (id) => {
+const deleteCommentById = async (id) => {
     // const commentData = loadData(commentDataPath);
     // const commentIndex = commentData["comments"].findIndex(comment => comment.comment_id === parseInt(id));
     // commentData["comments"].splice(commentIndex, 1);
