@@ -1,71 +1,9 @@
 // CHECKLIST
 // [x] 쿠키 세션 구현
+// [ ] sql로 쿠키 세션 구현
 
-const {loadData, saveData, makeRes, getTimeNow} = require ('./controllerUtils.js');
-const {deleteBoardById} = require('./boardController.js');
-
-const userDataPath = 'public/data/users.json';
-const keyDataPath = 'public/data/keys.json';
-const boardDataPath = 'public/data/boards.json';
-const commentDataPath = 'public/data/comments.json';
-
-/* Utils */
-const findUserByEmail = (email) => {
-    const userData = loadData(userDataPath);
-    return userData["users"].find(user => user.email === email);
-}
-
-const findUserById = (id) => {
-    const userData = loadData(userDataPath);
-    return userData["users"].find(user => user.user_id === parseInt(id));
-}
-
-const findUserByNickname = (nickname) => {
-    const userData = loadData(userDataPath);
-    return userData["users"].find(user => user.nickname === nickname);
-}
-
-const makeNewUser = (email, password, nickname, profileImagePath) => {
-    return {
-        "email": email,
-        "nickname": nickname,
-        "password": password,
-        "profile_image": profileImagePath || "/images/default.png",
-        "created_at": getTimeNow(),
-        "updated_at": getTimeNow()
-    }
-}
-
-const saveNewUser = (newUser) => {
-    let userData = loadData(userDataPath);
-    let keyData = loadData(keyDataPath);
-    const userId = keyData.user_id + 1;
-    newUser.user_id = userId;  // set user_id
-    userData.users.push(newUser);  // push new user
-    saveData(userData, userDataPath);
-    keyData.user_id += 1;
-    saveData(keyData, keyDataPath);
-    return userId;
-}
-
-const patchUserContent = (user) => {
-    const userData = loadData(userDataPath);
-    const userIndex = userData["users"].findIndex(u => u.user_id === user.user_id);
-    user.updated_at = getTimeNow();
-    userData["users"][userIndex] = user;
-    saveData(userData, userDataPath);
-}
-
-const deleteUserById = (id) => {
-    const userData = loadData(userDataPath);
-    const userIndex = userData["users"].findIndex(u => u.user_id === parseInt(id));
-    const removedItem = userData["users"].splice(userIndex, 1);
-    saveData(userData, userDataPath);
-    // delete boards written by user
-    let boardData = loadData(boardDataPath);
-    const boards = boardData["boards"].filter(b => b.user_id === parseInt(id));
-    boards.forEach(board => deleteBoardById(board.board_id));
-}
+const {makeRes} = require ('./controllerUtils.js');
+const {findUserByEmail, findUserById, findUserByNickname, saveNewUser, patchUserContent, deleteUserById} = require('../models/Users.js')
 
 /* Controller */
 const login = (req, res) => {
@@ -88,7 +26,7 @@ const signUp = (req, res) => {
     if(!requestData.password){res.status(400).json(makeRes(400, "invalid_password", null)); return;} // invalid password
     if(findUserByEmail(requestData.email)){res.status(400).json(makeRes(400, "used_email", null)); return;} // used email
     if(findUserByNickname(requestData.nickname)){res.status(400).json(makeRes(400, "used_nickname", null)); return;} // used nickname
-    const newUser = makeNewUser(requestData.email, requestData.password, requestData.nickname, requestData.profileImagePath);
+    // const newUser = makeNewUser(requestData.email, requestData.password, requestData.nickname, requestData.profileImagePath);
     const userId = saveNewUser(newUser);
     res.status(201).json(makeRes(201, "register_success", {"user_id":userId}));
 }
