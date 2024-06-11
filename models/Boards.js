@@ -18,7 +18,7 @@ function queryDatabase(sql, params) {
 
 /* Utils */
 const getAllBoards = async() => {
-    var sql = 'select b.board_id, u.nickname writer, i2.file_url profile_image, b.title, b.content, i.file_url board_image, b.created_at, b.updated_at, b.deleted_at, h.hit from boards b \
+    let sql = 'select b.board_id, u.nickname writer, i2.file_url profile_image, b.title, b.content, i.file_url board_image, b.created_at, b.updated_at, b.deleted_at, h.hit from boards b \
     left join board_hits h on b.board_id = h.board_id\
     left join images i on b.image_id = i.image_id\
     left join users u on b.user_id = u.user_id\
@@ -35,13 +35,12 @@ const getAllBoards = async() => {
 }
 
 const findBoardById = async (id) => {
-    var sql = 'select * from boards\
+    let sql = 'select * from boards\
     WHERE board_id=? and deleted_at is NULL;\
     ';
-    var params = [id];
+    let params = [id];
     try {
         const result = await queryDatabase(sql, params);
-        console.log(result);
         return result[0];
     } catch (err) {
         console.log(err);
@@ -50,17 +49,16 @@ const findBoardById = async (id) => {
 }
 
 const findBoardDetailById = async (id) => {
-    var sql = 'select b.board_id, u.nickname writer, i2.file_url profile_image, b.title, b.content, i.file_url board_image, b.created_at, b.updated_at, b.deleted_at, h.hit from boards b \
+    let sql = 'select b.board_id, u.nickname writer, i2.file_url profile_image, b.title, b.content, i.file_url board_image, b.created_at, b.updated_at, b.deleted_at, h.hit from boards b \
     left join board_hits h on b.board_id = h.board_id\
     left join images i on b.image_id = i.image_id\
     left join users u on b.user_id = u.user_id\
     left join images i2 on u.image_id = i2.image_id\
     WHERE b.board_id=? and b.deleted_at is NULL;\
     ';
-    var params = [id];
+    let params = [id];
     try {
         const result = await queryDatabase(sql, params);
-        console.log(result);
         return result[0];
     } catch (err) {
         console.log(err);
@@ -131,7 +129,7 @@ const deleteBoardById = async (id) => {
     const deleteBoard = "UPDATE boards b set b.deleted_at = CURRENT_TIMESTAMP WHERE b.board_id = ?;";
     const deleteComment = "UPDATE comments c set c.deleted_at = CURRENT_TIMESTAMP WHERE c.board_id = ?;";
     const commitTransaction = "COMMIT;";
-    var params = [id];
+    let params = [id];
 
     try {
         await queryDatabase(startTransaction);

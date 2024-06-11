@@ -33,7 +33,8 @@ router.delete("/:id", boardController.deleteBoard);
 
 
 // 댓글 추가 "/:id/comments"
-router.post("/:id/comments", authenticateMiddleware, commentController.postComment);
+// router.post("/:id/comments", authenticateMiddleware, commentController.postComment);
+router.post("/:id/comments", commentController.postComment);
 
 // 댓글 수정 "/{post_id}/comments/{comment_id}" *
 router.patch("/:postId/comments/:commentId", authenticateMiddleware, authorizeCommentMiddleware, commentController.patchComment);
