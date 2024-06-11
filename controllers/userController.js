@@ -19,15 +19,15 @@ const login = (req, res) => {
     res.status(200).json(makeRes(200, "login_success", {"user" : user}));
 }
 
-const signUp = (req, res) => {
+const signUp = async (req, res) => {
     const requestData = req.body;
     if(!requestData.email){res.status(400).json(makeRes(400, "invalid_email", null)); return;} // invalid email
     if(!requestData.nickname){res.status(400).json(makeRes(400, "invalid_nickname", null)); return;} // invalid nickname
     if(!requestData.password){res.status(400).json(makeRes(400, "invalid_password", null)); return;} // invalid password
-    if(findUserByEmail(requestData.email)){res.status(400).json(makeRes(400, "used_email", null)); return;} // used email
-    if(findUserByNickname(requestData.nickname)){res.status(400).json(makeRes(400, "used_nickname", null)); return;} // used nickname
+    if(await findUserByEmail(requestData.email)){res.status(400).json(makeRes(400, "used_email", null)); return;} // used email
+    if(await findUserByNickname(requestData.nickname)){res.status(400).json(makeRes(400, "used_nickname", null)); return;} // used nickname
     // const newUser = makeNewUser(requestData.email, requestData.password, requestData.nickname, requestData.profileImagePath);
-    const userId = saveNewUser(newUser);
+    const userId = await saveNewUser(requestData.email, requestData.password, requestData.nickname, requestData.profileImagePath);
     res.status(201).json(makeRes(201, "register_success", {"user_id":userId}));
 }
 

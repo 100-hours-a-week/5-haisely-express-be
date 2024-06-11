@@ -2,40 +2,84 @@ const db = require('../secret/database');
 
 const conn = db.init();
 
+
 /* Utils */
-const findUserByEmail = (email) => {
-    // var sql = 'SELECT * from users WHERE email=?';
-    // var params = [email]
-    // conn.query(sql, params, function(err, rows, fields){//두번째 인자에 배열로 된 값을 넣어줄 수 있다.
-    //     if(err){
-    //         console.log(err);
-    //     } else {
-    //         console.log(rows[i].title + " : " + rows[i].description);
-    //     }
-    // });
-    // return rows;
+function queryDatabase(sql, params) {
+    return new Promise((resolve, reject) => {
+        conn.query(sql, params, function(err, rows, fields) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(rows);
+            }
+        });
+    });
 }
 
-const findUserById = (id) => {
-    // const userData = loadData(userDataPath);
-    // return userData["users"].find(user => user.user_id === parseInt(id));
+/* Utils */
+const findUserByEmail = async (email) => {
+    let sql = 'SELECT * from users WHERE email=?';
+    let params = [email];
+    try {
+        const result = await queryDatabase(sql, params);
+        return result[0];
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
 }
 
-const findUserByNickname = (nickname) => {
-    // const userData = loadData(userDataPath);
-    // return userData["users"].find(user => user.nickname === nickname);
+const findUserById = async (id) => {
+    let sql = 'SELECT * from users WHERE user_id=?';
+    let params = [id];
+    try {
+        const result = await queryDatabase(sql, params);
+        return result[0];
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
 }
 
-const saveNewUser = (newUser) => {
-    // let userData = loadData(userDataPath);
-    // let keyData = loadData(keyDataPath);
-    // const userId = keyData.user_id + 1;
-    // newUser.user_id = userId;  // set user_id
-    // userData.users.push(newUser);  // push new user
-    // saveData(userData, userDataPath);
-    // keyData.user_id += 1;
-    // saveData(keyData, keyDataPath);
-    // return userId;
+const findUserByNickname = async (nickname) => {
+    let sql = 'SELECT * from users WHERE nickname=?';
+    let params = [nickname];
+    try {
+        const result = await queryDatabase(sql, params);
+        return result[0];
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
+}
+
+const saveNewUser = async (email, password, nickname, profileImage) => {
+    const startTransaction = "START TRANSACTION;";
+    const insertImage = "INSERT INTO images (file_url) VALUES (?);";
+    const insertUserWithImage = "INSERT INTO users (image_id, nickname, email, password) VALUES (LAST_INSERT_ID(), ?, ?, ?);";
+    const insertUser = "INSERT INTO users (nickname, email, password) VALUES (?, ?, ?);";
+    const getLastInsertId = "SELECT LAST_INSERT_ID() AS user_id;";
+    const commitTransaction = "COMMIT;";
+
+    try {
+        await queryDatabase(startTransaction);
+
+        if (profileImage != null){
+            await queryDatabase(insertImage, [profileImage]);
+            await queryDatabase(insertUserWithImage, [nickname, email, password]);
+        } else {
+            await queryDatabase(insertUser, [nickname, email, password]);
+        }
+        const result = await queryDatabase(getLastInsertId);
+        await queryDatabase(commitTransaction);
+        console.log('Transaction completed successfully');
+        return result[0].user_id;
+
+    } catch (error) {
+        await queryDatabase("ROLLBACK;");
+        console.error('Transaction failed, rollback executed', error);
+        return null;
+    }
 }
 
 const patchUserContent = (user) => {
