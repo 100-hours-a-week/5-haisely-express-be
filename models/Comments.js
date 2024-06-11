@@ -17,17 +17,26 @@ function queryDatabase(sql, params) {
 }
 
 /* Utils */
-const findCommentsByCommentId = (id) => {
-    const commentData = loadData(commentDataPath);
-    return commentData["comments"].find(comment => comment.comment_id === parseInt(id));
-}
-
-const findCommentsByPostId = async (id) => {
-    var sql = 'SELECT * from comments WHERE board_id=?';
-    var params = [id];
+const findCommentsByCommentId = async (id) => {
+    let sql = 'select * from comments\
+    WHERE comment_id=? and deleted_at is NULL;';
+    let params = [id];
     try {
         const result = await queryDatabase(sql, params);
-        console.log(result)
+        return result[0];
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
+
+}
+
+const findCommentsByBoardId = async (id) => {
+    let sql = 'SELECT * from comments\
+    WHERE board_id=? and deleted_at is NULL;';
+    let params = [id];
+    try {
+        const result = await queryDatabase(sql, params);
         return result;
     } catch (err) {
         console.log(err);
@@ -35,61 +44,56 @@ const findCommentsByPostId = async (id) => {
     }
 }
 
-const makeNewComment = (user, postId, content) => {
-    return {
-        "comment_content": content,
-        "post_id": parseInt(postId),
-        "user_id": user.user_id,  
-        "nickname": user.nickname,
-        "created_at": getTimeNow(),
-        "updated_at": getTimeNow(),
-        "profile_image_path": user.profile_image_path || "/images/default.png"
+const saveNewComment = async (boardId, user, content) => {
+    const startTransaction = "START TRANSACTION;";
+    let insertComment = 'INSERT INTO comments (board_id, user_id, content) VALUES (?, ?, ?);';
+    const getLastInsertId = "SELECT LAST_INSERT_ID() AS comment_id;";
+    const commitTransaction = "COMMIT;";
+
+    try {
+        await queryDatabase(startTransaction);
+        await queryDatabase(insertComment, [boardId, user.user_id, content]);
+        const result = await queryDatabase(getLastInsertId);
+        await queryDatabase(commitTransaction);
+        console.log('Transaction completed successfully');
+        return result[0].comment_id;
+
+    } catch (error) {
+        await queryDatabase("ROLLBACK;");
+        console.error('Transaction failed, rollback executed', error);
+        return null;
     }
 }
 
-const saveNewComment = (newComment) => {
-    let commentData = loadData(commentDataPath);
-    let keyData = loadData(keyDataPath);
-    const commentId = keyData.comment_id + 1;
-    newComment.comment_id = commentId; // set comment_id
-    commentData.comments.push(newComment); // push new comment
-    saveData(commentData, commentDataPath); 
-    keyData.comment_id += 1;
-    saveData(keyData, keyDataPath);
-    return commentId;
+const patchCommentContent = async (id, content) => {
+    let sql = 'update comments set content = ? where comment_id = ?;';
+    let params = [content, id];
+    try {
+        const result = await queryDatabase(sql, params);
+        return result;
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
 }
 
-const patchCommentContent = (comment, content) => {
-    const commentData = loadData(commentDataPath);
-    const commentIndex = commentData["comments"].findIndex(c => c.comment_id === comment.comment_id);
-    comment.comment_content = content;
-    comment.updated_at = getTimeNow();
-    commentData["comments"][commentIndex] = comment;
-    saveData(commentData, commentDataPath);
+const deleteCommentById = async (id) => {
+    let sql = 'UPDATE comments c set c.deleted_at = CURRENT_TIMESTAMP WHERE c.comment_id = ?;'
+    let params = [id];
+    try {
+        const result = await queryDatabase(sql, params);
+        return result;
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
 }
-
-const deleteCommentById = (id) => {
-    const commentData = loadData(commentDataPath);
-    const commentIndex = commentData["comments"].findIndex(comment => comment.comment_id === parseInt(id));
-    commentData["comments"].splice(commentIndex, 1);
-    saveData(commentData, commentDataPath);
-}
-
-const deleteCommentsByPostId = (id) => {
-    let commentData = loadData(commentDataPath);
-    // delete comments in post
-    const comments = commentData["comments"].filter(item => item.post_id === parseInt(id));
-    comments.forEach(comment => {deleteCommentById(comment.comment_id);});
-}
-
 
 
 module.exports = {
     findCommentsByCommentId,
-    findCommentsByPostId,
-    makeNewComment,
+    findCommentsByBoardId,
     saveNewComment,
     patchCommentContent,
-    deleteCommentById,
-    deleteCommentsByPostId
+    deleteCommentById
 };

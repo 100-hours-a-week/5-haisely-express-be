@@ -24,19 +24,24 @@ router.get('/:id', boardController.getBoardDetail);
 router.post("/", boardController.postBoard);
 
 // 게시글 수정 "/:id"
-router.patch("/:id", authenticateMiddleware, authorizeBoardMiddleware, boardController.patchBoard);
+// router.patch("/:id", authenticateMiddleware, authorizeBoardMiddleware, boardController.patchBoard);
+router.patch("/:id", boardController.patchBoard);
 
 // 게시글 삭제 "/:id"
-router.delete("/:id", authenticateMiddleware, authorizeBoardMiddleware, boardController.deleteBoard);
+// router.delete("/:id", authenticateMiddleware, authorizeBoardMiddleware, boardController.deleteBoard);
+router.delete("/:id", boardController.deleteBoard);
 
 
 // 댓글 추가 "/:id/comments"
-router.post("/:id/comments", authenticateMiddleware, commentController.postComment);
+// router.post("/:id/comments", authenticateMiddleware, commentController.postComment);
+router.post("/:id/comments", commentController.postComment);
 
 // 댓글 수정 "/{post_id}/comments/{comment_id}" *
-router.patch("/:postId/comments/:commentId", authenticateMiddleware, authorizeCommentMiddleware, commentController.patchComment);
+// router.patch("/:postId/comments/:commentId", authenticateMiddleware, authorizeCommentMiddleware, commentController.patchComment);
+router.patch("/:postId/comments/:commentId", commentController.patchComment);
 
 // 댓글 삭제 "/{post_id}/comments/{comment_id}" *
-router.delete("/:postId/comments/:commentId", authenticateMiddleware, authorizeCommentMiddleware, commentController.deleteComment);
+// router.delete("/:postId/comments/:commentId", authenticateMiddleware, authorizeCommentMiddleware, commentController.deleteComment);
+router.delete("/:postId/comments/:commentId", commentController.deleteComment);
 
 module.exports = router;
