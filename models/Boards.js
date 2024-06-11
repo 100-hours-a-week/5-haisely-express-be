@@ -34,8 +34,22 @@ const getAllBoards = async() => {
     }
 }
 
-
 const findBoardById = async (id) => {
+    var sql = 'select * from boards\
+    WHERE board_id=? and deleted_at is NULL;\
+    ';
+    var params = [id];
+    try {
+        const result = await queryDatabase(sql, params);
+        console.log(result);
+        return result[0];
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
+}
+
+const findBoardDetailById = async (id) => {
     var sql = 'select b.board_id, u.nickname writer, i2.file_url profile_image, b.title, b.content, i.file_url board_image, b.created_at, b.updated_at, b.deleted_at, h.hit from boards b \
     left join board_hits h on b.board_id = h.board_id\
     left join images i on b.image_id = i.image_id\
@@ -81,15 +95,33 @@ const makeNewBoard = async (user, boardTitle, boardContent, attachFilePath) => {
 }
 
 
-const patchBoardContent = (board, title, content, attachFilePath) => {
-    // const boardData = loadData(boardDataPath);
-    // const boardIndex = boardData["boards"].findIndex(b => b.post_id === parseInt(board.post_id));
-    // board.post_title = title;
-    // board.post_content = content;
-    // board.file_path = attachFilePath || null;
-    // board.updated_at = getTimeNow();
-    // boardData["boards"][boardIndex] = board;
-    // saveData(boardData, boardDataPath);
+const patchBoardContent = async(boardId, title, content, attachFilePath) => {
+    const startTransaction = "START TRANSACTION;";
+    const updateImage = "INSERT INTO images (file_url) VALUES (?);";
+    const updateBoardWithImage = "UPDATE boards set title = ?, content = ?, image_id = LAST_INSERT_ID() WHERE board_id = ?;";
+    const updateBoard = "UPDATE boards set title = ?, content = ?, image_id = ? WHERE board_id = ?;";
+    const commitTransaction = "COMMIT;";
+
+    try {
+        await queryDatabase(startTransaction);
+
+        if (attachFilePath != null){
+            await queryDatabase(updateImage, [attachFilePath]);
+            await queryDatabase(updateBoardWithImage, [title, content, boardId]);
+        } else {
+            await queryDatabase(updateBoard, [title, content, null, boardId]);
+        }
+
+        await queryDatabase(commitTransaction);
+        console.log('Transaction completed successfully');
+
+    } catch (error) {
+        await queryDatabase("ROLLBACK;");
+        console.error('Transaction failed, rollback executed', error);
+        return null;
+    }
+
+
 }
 
 const deleteBoardById = async (id) => {
@@ -116,6 +148,7 @@ const deleteBoardById = async (id) => {
 module.exports = {
     getAllBoards,
     findBoardById,
+    findBoardDetailById,
     makeNewBoard,
     patchBoardContent,
     deleteBoardById

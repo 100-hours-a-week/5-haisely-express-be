@@ -5,7 +5,7 @@
 */
 
 const {loadData, saveData, makeRes, getTimeNow} = require ('./controllerUtils.js');
-const {getAllBoards, findBoardById, makeNewBoard, patchBoardContent, deleteBoardById} = require('../models/Boards.js')
+const {getAllBoards, findBoardById, findBoardDetailById, makeNewBoard, patchBoardContent, deleteBoardById} = require('../models/Boards.js')
 const {findCommentsByPostId, deleteCommentsByPostId} = require('../models/Comments.js')
 
 const boardDataPath = 'public/data/boards.json';
@@ -20,40 +20,40 @@ const getBoards = async (req, res) => {
 
 const getBoardDetail = async (req, res) => {
     const boardId = req.params.id;
-    const board = await findBoardById(boardId);
+    const board = await findBoardDetailById(boardId);
     if (!board) {res.status(404).json(makeRes(404, "cannot_found_post", null)); return;}  // board not found
     const comments = await findCommentsByPostId(boardId);
     console.log(comments);
     res.status(200).json(makeRes(200, null, {"board" : board, "comments":comments}));
 }
 
-const postBoard = (req, res) =>{
+const postBoard = async (req, res) =>{
     const requestData = req.body;
     if(!requestData.postTitle){res.status(400).json(makeRes(400, "invalid_post_title", null)); return;} // invalid title
     if(!requestData.postContent){res.status(400).json(makeRes(400, "invalid_post_content", null)); return;} // invalid content
     // const user = req.session.user
     const user = {user_id: 1}
-    const postId = makeNewBoard(user, requestData.postTitle, requestData.postContent, requestData.attachFilePath);
-    res.status(201).json(makeRes(201, "write_post_success", {"post_id" : postId}));
+    const boardId = await makeNewBoard(user, requestData.postTitle, requestData.postContent, requestData.attachFilePath);
+    res.status(201).json(makeRes(201, "write_post_success", {"board_id" : boardId}));
 }
 
-const patchBoard = (req, res) =>{
+const patchBoard = async (req, res) =>{
     const requestData = req.body;
     const boardId = req.params.id;
     if(!requestData.postTitle){res.status(400).json(makeRes(400, "invalid_post_title", null)); return;} // invalid title
     if(!requestData.postContent){res.status(400).json(makeRes(400, "invalid_post_content", null)); return;} // invalid content
-    const board = findBoardById(boardId);
+    const board = await findBoardById(boardId);
     if (!board) {res.status(404).json(makeRes(404, "cannot_found_post", null)); return;}  // board not found
-    patchBoardContent(board, requestData.postTitle, requestData.postContent, requestData.attachFilePath);
-    res.status(200).json(makeRes(200, "update_post_success", {"post_id" : boardId}));
+    await patchBoardContent(boardId, requestData.postTitle, requestData.postContent, requestData.attachFilePath);
+    res.status(200).json(makeRes(200, "update_post_success", {"board_id" : boardId}));
 }
 
-const deleteBoard = (req, res) => {
+const deleteBoard = async (req, res) => {
     const boardId = req.params.id;
-    const board = findBoardById(boardId);
+    const board = await findBoardById(boardId);
     console.log(board)
     if (!board) {res.status(404).json(makeRes(404, "cannot_found_post", null)); return;}  // board not found
-    deleteBoardById(boardId);
+    await deleteBoardById(boardId);
     res.status(200).json(makeRes(204,"delete_post_success", null));
 }
 

@@ -24,7 +24,8 @@ router.get('/:id', boardController.getBoardDetail);
 router.post("/", boardController.postBoard);
 
 // 게시글 수정 "/:id"
-router.patch("/:id", authenticateMiddleware, authorizeBoardMiddleware, boardController.patchBoard);
+// router.patch("/:id", authenticateMiddleware, authorizeBoardMiddleware, boardController.patchBoard);
+router.patch("/:id", boardController.patchBoard);
 
 // 게시글 삭제 "/:id"
 // router.delete("/:id", authenticateMiddleware, authorizeBoardMiddleware, boardController.deleteBoard);
