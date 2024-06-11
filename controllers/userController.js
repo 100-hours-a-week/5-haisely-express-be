@@ -1,71 +1,9 @@
 // CHECKLIST
 // [x] 쿠키 세션 구현
+// [ ] sql로 쿠키 세션 구현
 
-const {loadData, saveData, makeRes, getTimeNow} = require ('./controllerUtils.js');
-const {deleteBoardById} = require('./boardController.js');
-
-const userDataPath = 'public/data/users.json';
-const keyDataPath = 'public/data/keys.json';
-const boardDataPath = 'public/data/boards.json';
-const commentDataPath = 'public/data/comments.json';
-
-/* Utils */
-const findUserByEmail = (email) => {
-    const userData = loadData(userDataPath);
-    return userData["users"].find(user => user.email === email);
-}
-
-const findUserById = (id) => {
-    const userData = loadData(userDataPath);
-    return userData["users"].find(user => user.user_id === parseInt(id));
-}
-
-const findUserByNickname = (nickname) => {
-    const userData = loadData(userDataPath);
-    return userData["users"].find(user => user.nickname === nickname);
-}
-
-const makeNewUser = (email, password, nickname, profileImagePath) => {
-    return {
-        "email": email,
-        "nickname": nickname,
-        "password": password,
-        "profile_image": profileImagePath || "/images/default.png",
-        "created_at": getTimeNow(),
-        "updated_at": getTimeNow()
-    }
-}
-
-const saveNewUser = (newUser) => {
-    let userData = loadData(userDataPath);
-    let keyData = loadData(keyDataPath);
-    const userId = keyData.user_id + 1;
-    newUser.user_id = userId;  // set user_id
-    userData.users.push(newUser);  // push new user
-    saveData(userData, userDataPath);
-    keyData.user_id += 1;
-    saveData(keyData, keyDataPath);
-    return userId;
-}
-
-const patchUserContent = (user) => {
-    const userData = loadData(userDataPath);
-    const userIndex = userData["users"].findIndex(u => u.user_id === user.user_id);
-    user.updated_at = getTimeNow();
-    userData["users"][userIndex] = user;
-    saveData(userData, userDataPath);
-}
-
-const deleteUserById = (id) => {
-    const userData = loadData(userDataPath);
-    const userIndex = userData["users"].findIndex(u => u.user_id === parseInt(id));
-    const removedItem = userData["users"].splice(userIndex, 1);
-    saveData(userData, userDataPath);
-    // delete boards written by user
-    let boardData = loadData(boardDataPath);
-    const boards = boardData["boards"].filter(b => b.user_id === parseInt(id));
-    boards.forEach(board => deleteBoardById(board.board_id));
-}
+const {makeRes} = require ('./controllerUtils.js');
+const {findUserByEmail, findUserById, findUserByNickname, saveNewUser, patchUserContent, patchUserPassword, deleteUserById} = require('../models/Users.js')
 
 /* Controller */
 const login = (req, res) => {
@@ -81,15 +19,15 @@ const login = (req, res) => {
     res.status(200).json(makeRes(200, "login_success", {"user" : user}));
 }
 
-const signUp = (req, res) => {
+const signUp = async (req, res) => {
     const requestData = req.body;
     if(!requestData.email){res.status(400).json(makeRes(400, "invalid_email", null)); return;} // invalid email
     if(!requestData.nickname){res.status(400).json(makeRes(400, "invalid_nickname", null)); return;} // invalid nickname
     if(!requestData.password){res.status(400).json(makeRes(400, "invalid_password", null)); return;} // invalid password
-    if(findUserByEmail(requestData.email)){res.status(400).json(makeRes(400, "used_email", null)); return;} // used email
-    if(findUserByNickname(requestData.nickname)){res.status(400).json(makeRes(400, "used_nickname", null)); return;} // used nickname
-    const newUser = makeNewUser(requestData.email, requestData.password, requestData.nickname, requestData.profileImagePath);
-    const userId = saveNewUser(newUser);
+    if(await findUserByEmail(requestData.email)){res.status(400).json(makeRes(400, "used_email", null)); return;} // used email
+    if(await findUserByNickname(requestData.nickname)){res.status(400).json(makeRes(400, "used_nickname", null)); return;} // used nickname
+    // const newUser = makeNewUser(requestData.email, requestData.password, requestData.nickname, requestData.profileImagePath);
+    const userId = await saveNewUser(requestData.email, requestData.password, requestData.nickname, requestData.profileImagePath);
     res.status(201).json(makeRes(201, "register_success", {"user_id":userId}));
 }
 
@@ -103,41 +41,44 @@ const logout = (req, res) => {
     });
 }
 
-const getUserById = (req, res) => {
-    const userId = req.session.user.user_id;
+const getUserById = async (req, res) => {
+    // const userId = req.session.user.user_id;
+    const userId =1;
     console.log(userId);
-    let user = findUserById(userId);
+    let user = await findUserById(userId);
     if(!user) {res.status(404).json(makeRes(404, "not_found_user", null)); return;}  // user not found
     delete user.password;
     res.status(200).json(makeRes(200, null, {"user" : user}));
 }
 
-const patchUser = (req, res) => {
+const patchUser = async (req, res) => {
     const requestData = req.body;
-    const userId = req.session.user.user_id;
+    // const userId = req.session.user.user_id;
+    const userId = 1;
     if(!requestData.nickname){res.status(400).json(makeRes(400, "invalid_nickname", null)); return;} // invalid nickname
-    let user = findUserById(userId);
+    let user = await findUserById(userId);
     if(!user) {res.status(404).json(makeRes(404, "not_found_user", null)); return;}  // user not found
-    user.nickname = requestData.nickname;
-    user.profile_image = requestData.profileImage || "/images/default.png";
-    patchUserContent(user);
+    patchUserContent(userId, requestData.nickname, user.profile_image);
     res.status(200).json(makeRes(200, "update_user_data_success", null));
 }
 
-const patchPassword = (req, res) => {
+const patchPassword = async (req, res) => {
     const requestData = req.body;
-    const userId = req.session.user.user_id;
+    // const userId = req.session.user.user_id;
+    const userId = 1;
     if(!requestData.password){res.status(400).json(makeRes(400, "invalid_password", null)); return;} // invalid password
-    let user = findUserById(userId);
+    let user = await findUserById(userId);
     if(!user) {res.status(404).json(makeRes(404, "not_found_user", null)); return;}  // user not found
-    user.password = requestData.password;
-    patchUserContent(user);
+    await patchUserPassword(userId,requestData.password);
     res.status(200).json(makeRes(200, "update_user_password_success", null));
 }
 
-const deleteUser = (req, res) => {
-    const userId = req.session.user.user_id;
-    deleteUserById(userId);
+const deleteUser = async (req, res) => {
+    // const userId = req.session.user.user_id;
+    const userId = 2;
+    let user = await findUserById(userId);
+    if(!user) {res.status(404).json(makeRes(404, "not_found_user", null)); return;}  // user not found
+    await deleteUserById(userId);
     res.status(200).json(makeRes(204,"delete_user_success", null));
 }
 
@@ -146,16 +87,16 @@ const authCheck = (req, res) => {
     res.status(200).json(makeRes(200, null, null));
 }
 
-const emailCheck = (req, res) => {
+const emailCheck = async (req, res) => {
     const {email} = req.query;
-    const user = findUserByEmail(email);
+    const user = await findUserByEmail(email);
     if (user){res.status(400).json(makeRes(400, "already_exist_email", null)); return;}  // already used email
     res.status(200).json(makeRes(200, "available_email", null));
 }
 
-const nicknameCheck =  (req, res) => {
+const nicknameCheck = async (req, res) => {
     const {nickname} = req.query;
-    const user = findUserByNickname(nickname);
+    const user = await findUserByNickname(nickname);
     if (user){res.status(400).json(makeRes(400, "already_exist_nickname", null)); return;}  // already used nickname
     res.status(200).json(makeRes(200, "available_nickname", null));
 }

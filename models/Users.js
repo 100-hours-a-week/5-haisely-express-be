@@ -2,78 +2,158 @@ const db = require('../secret/database');
 
 const conn = db.init();
 
+
 /* Utils */
-const findUserByEmail = (email) => {
-    var sql = 'SELECT * from users WHERE email=?';
-    var params = [email]
-    conn.query(sql, params, function(err, rows, fields){//두번째 인자에 배열로 된 값을 넣어줄 수 있다.
-        if(err){
-            console.log(err);
-        } else {
-            console.log(rows[i].title + " : " + rows[i].description);
-        }
+function queryDatabase(sql, params) {
+    return new Promise((resolve, reject) => {
+        conn.query(sql, params, function(err, rows, fields) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(rows);
+            }
+        });
     });
-    return rows;
 }
 
-const findUserById = (id) => {
-    const userData = loadData(userDataPath);
-    return userData["users"].find(user => user.user_id === parseInt(id));
-}
-
-const findUserByNickname = (nickname) => {
-    const userData = loadData(userDataPath);
-    return userData["users"].find(user => user.nickname === nickname);
-}
-
-const makeNewUser = (email, password, nickname, profileImagePath) => {
-    return {
-        "email": email,
-        "nickname": nickname,
-        "password": password,
-        "profile_image": profileImagePath || "/images/default.png",
-        "created_at": getTimeNow(),
-        "updated_at": getTimeNow()
+/* Utils */
+const findUserByEmail = async (email) => {
+    let sql = 'SELECT * from users\
+    WHERE email=? and deleted_at is NULL;';
+    let params = [email];
+    try {
+        const result = await queryDatabase(sql, params);
+        return result[0];
+    } catch (err) {
+        console.log(err);
+        return null;
     }
 }
 
-const saveNewUser = (newUser) => {
-    let userData = loadData(userDataPath);
-    let keyData = loadData(keyDataPath);
-    const userId = keyData.user_id + 1;
-    newUser.user_id = userId;  // set user_id
-    userData.users.push(newUser);  // push new user
-    saveData(userData, userDataPath);
-    keyData.user_id += 1;
-    saveData(keyData, keyDataPath);
-    return userId;
+const findUserById = async (id) => {
+    let sql = 'SELECT * from users\
+    WHERE user_id=? and deleted_at is NULL;';
+    let params = [id];
+    try {
+        const result = await queryDatabase(sql, params);
+        return result[0];
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
 }
 
-const patchUserContent = (user) => {
-    const userData = loadData(userDataPath);
-    const userIndex = userData["users"].findIndex(u => u.user_id === user.user_id);
-    user.updated_at = getTimeNow();
-    userData["users"][userIndex] = user;
-    saveData(userData, userDataPath);
+const findUserByNickname = async (nickname) => {
+    let sql = 'SELECT * from users\
+    WHERE nickname=? and deleted_at is NULL;';
+    let params = [nickname];
+    try {
+        const result = await queryDatabase(sql, params);
+        return result[0];
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
 }
 
-const deleteUserById = (id) => {
-    const userData = loadData(userDataPath);
-    const userIndex = userData["users"].findIndex(u => u.user_id === parseInt(id));
-    const removedItem = userData["users"].splice(userIndex, 1);
-    saveData(userData, userDataPath);
-    // delete boards written by user
-    let boardData = loadData(boardDataPath);
-    const boards = boardData["boards"].filter(b => b.user_id === parseInt(id));
-    boards.forEach(board => deleteBoardById(board.board_id));
+const saveNewUser = async (email, password, nickname, profileImage) => {
+    const startTransaction = "START TRANSACTION;";
+    const insertImage = "INSERT INTO images (file_url) VALUES (?);";
+    const insertUserWithImage = "INSERT INTO users (image_id, nickname, email, password) VALUES (LAST_INSERT_ID(), ?, ?, ?);";
+    const insertUser = "INSERT INTO users (nickname, email, password) VALUES (?, ?, ?);";
+    const getLastInsertId = "SELECT LAST_INSERT_ID() AS user_id;";
+    const commitTransaction = "COMMIT;";
+
+    try {
+        await queryDatabase(startTransaction);
+
+        if (profileImage != null){
+            await queryDatabase(insertImage, [profileImage]);
+            await queryDatabase(insertUserWithImage, [nickname, email, password]);
+        } else {
+            await queryDatabase(insertUser, [nickname, email, password]);
+        }
+        const result = await queryDatabase(getLastInsertId);
+        await queryDatabase(commitTransaction);
+        console.log('Transaction completed successfully');
+        return result[0].user_id;
+
+    } catch (error) {
+        await queryDatabase("ROLLBACK;");
+        console.error('Transaction failed, rollback executed', error);
+        return null;
+    }
+}
+
+const patchUserContent = async (userId, nickname, profileImage) => {
+    const startTransaction = "START TRANSACTION;";
+    const updateImage = "INSERT INTO images (file_url) VALUES (?);";
+    const updateBoardWithImage = "UPDATE users u SET u.nickname = ?, u.image_id = LAST_INSERT_ID() WHERE u.user_id = ?;";
+    const updateBoard = "UPDATE users u SET u.nickname = ?, u.image_id = ? WHERE u.user_id = ?;";
+    const commitTransaction = "COMMIT;";
+
+    try {
+        await queryDatabase(startTransaction);
+
+        if (profileImage != null){
+            await queryDatabase(updateImage, [profileImage]);
+            await queryDatabase(updateBoardWithImage, [nickname, userId]);
+        } else {
+            await queryDatabase(updateBoard, [nickname, null, userId]);
+        }
+
+        await queryDatabase(commitTransaction);
+        console.log('Transaction completed successfully');
+
+    } catch (error) {
+        await queryDatabase("ROLLBACK;");
+        console.error('Transaction failed, rollback executed', error);
+        return null;
+    }
+}
+
+const patchUserPassword = async (userId, password) => {
+    let sql = 'UPDATE users u SET u.password = ? WHERE u.user_id = ?;';
+
+    let params = [password, userId];
+    try {
+        const result = await queryDatabase(sql, params);
+        return result[0];
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
+}
+
+const deleteUserById = async (id) => {
+    const startTransaction = "START TRANSACTION;";
+    const deleteUser = "UPDATE users u set u.deleted_at = CURRENT_TIMESTAMP WHERE u.user_id = ?;";
+    const deleteBoard = "UPDATE boards b set b.deleted_at = CURRENT_TIMESTAMP WHERE b.user_id = ? and b.deleted_at is NULL;";
+    const deleteComment = "UPDATE comments c set c.deleted_at = CURRENT_TIMESTAMP WHERE c.user_id = ? and c.deleted_at is NULL ;";
+    const commitTransaction = "COMMIT;";
+    let params = [id];
+
+    try {
+        await queryDatabase(startTransaction);
+        await queryDatabase(deleteUser, params);
+        await queryDatabase(deleteBoard, params);
+        await queryDatabase(deleteComment, params);
+        await queryDatabase(commitTransaction);
+        console.log('Transaction completed successfully');
+
+    } catch (error) {
+        await queryDatabase("ROLLBACK;");
+        console.error('Transaction failed, rollback executed', error);
+        return null;
+    }
 }
 
 module.exports = {
     findUserByEmail,
     findUserById,
     findUserByNickname,
-    makeNewUser,
     saveNewUser,
     patchUserContent,
+    patchUserPassword,
     deleteUserById
 };

@@ -127,7 +127,7 @@ const patchBoardContent = async(boardId, title, content, attachFilePath) => {
 const deleteBoardById = async (id) => {
     const startTransaction = "START TRANSACTION;";
     const deleteBoard = "UPDATE boards b set b.deleted_at = CURRENT_TIMESTAMP WHERE b.board_id = ?;";
-    const deleteComment = "UPDATE comments c set c.deleted_at = CURRENT_TIMESTAMP WHERE c.board_id = ?;";
+    const deleteComment = "UPDATE comments c set c.deleted_at = CURRENT_TIMESTAMP WHERE c.board_id = ? and c.deleted_at is NULL;";
     const commitTransaction = "COMMIT;";
     let params = [id];
 

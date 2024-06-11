@@ -60,4 +60,7 @@ CREATE TABLE sessions(
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
+CREATE INDEX idx_email ON users(email);
+CREATE INDEX idx_nickname ON users(nickname);
+
 show tables;
