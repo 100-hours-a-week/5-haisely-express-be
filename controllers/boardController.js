@@ -51,6 +51,7 @@ const patchBoard = (req, res) =>{
 const deleteBoard = (req, res) => {
     const boardId = req.params.id;
     const board = findBoardById(boardId);
+    console.log(board)
     if (!board) {res.status(404).json(makeRes(404, "cannot_found_post", null)); return;}  // board not found
     deleteBoardById(boardId);
     res.status(200).json(makeRes(204,"delete_post_success", null));

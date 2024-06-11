@@ -22,11 +22,11 @@ const getAllBoards = async() => {
     left join board_hits h on b.board_id = h.board_id\
     left join images i on b.image_id = i.image_id\
     left join users u on b.user_id = u.user_id\
-    left join images i2 on u.image_id = i2.image_id;\
+    left join images i2 on u.image_id = i2.image_id\
+    where b.deleted_at is NULL;\
     ';
-    params = []
     try {
-        const result = await queryDatabase(sql, params);
+        const result = await queryDatabase(sql);
         return result;
     } catch (err) {
         console.log(err);
@@ -41,11 +41,12 @@ const findBoardById = async (id) => {
     left join images i on b.image_id = i.image_id\
     left join users u on b.user_id = u.user_id\
     left join images i2 on u.image_id = i2.image_id\
-    WHERE b.board_id=?;\
+    WHERE b.board_id=? and b.deleted_at is NULL;\
     ';
     var params = [id];
     try {
         const result = await queryDatabase(sql, params);
+        console.log(result);
         return result[0];
     } catch (err) {
         console.log(err);
@@ -91,12 +92,25 @@ const patchBoardContent = (board, title, content, attachFilePath) => {
     // saveData(boardData, boardDataPath);
 }
 
-const deleteBoardById = (id) => {
-    // let boardData = loadData(boardDataPath);
-    // const boardIndex = boardData["boards"].findIndex(board => board.post_id === parseInt(id));
-    // boardData["boards"].splice(boardIndex, 1);
-    // saveData(boardData, boardDataPath);
-    // deleteCommentsByPostId(id);
+const deleteBoardById = async (id) => {
+    const startTransaction = "START TRANSACTION;";
+    const deleteBoard = "UPDATE boards b set b.deleted_at = CURRENT_TIMESTAMP WHERE b.board_id = ?;";
+    const deleteComment = "UPDATE comments c set c.deleted_at = CURRENT_TIMESTAMP WHERE c.board_id = ?;";
+    const commitTransaction = "COMMIT;";
+    var params = [id];
+
+    try {
+        await queryDatabase(startTransaction);
+        await queryDatabase(deleteBoard, params);
+        await queryDatabase(deleteComment, params);
+        await queryDatabase(commitTransaction);
+        console.log('Transaction completed successfully');
+
+    } catch (error) {
+        await queryDatabase("ROLLBACK;");
+        console.error('Transaction failed, rollback executed', error);
+        return null;
+    }
 }
 
 module.exports = {
