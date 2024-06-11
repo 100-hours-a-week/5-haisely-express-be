@@ -4,13 +4,9 @@
 [x] patch, delete 인가 구현하기
 */
 
-const {loadData, saveData, makeRes, getTimeNow} = require ('./controllerUtils.js');
+const {makeRes} = require ('./controllerUtils.js');
 const {getAllBoards, findBoardById, findBoardDetailById, makeNewBoard, patchBoardContent, deleteBoardById} = require('../models/Boards.js')
-const {findCommentsByPostId, deleteCommentsByPostId} = require('../models/Comments.js')
-
-const boardDataPath = 'public/data/boards.json';
-const keyDataPath = 'public/data/keys.json';
-
+const {findCommentsByBoardId} = require('../models/Comments.js')
 
 /* Controller */
 const getBoards = async (req, res) => {
@@ -22,7 +18,7 @@ const getBoardDetail = async (req, res) => {
     const boardId = req.params.id;
     const board = await findBoardDetailById(boardId);
     if (!board) {res.status(404).json(makeRes(404, "cannot_found_post", null)); return;}  // board not found
-    const comments = await findCommentsByPostId(boardId);
+    const comments = await findCommentsByBoardId(boardId);
     console.log(comments);
     res.status(200).json(makeRes(200, null, {"board" : board, "comments":comments}));
 }
@@ -62,7 +58,5 @@ module.exports = {
     getBoardDetail,
     postBoard,
     patchBoard, 
-    deleteBoard,
-    findBoardById,
-    deleteBoardById
+    deleteBoard
 };

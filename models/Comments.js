@@ -22,7 +22,7 @@ const findCommentsByCommentId = (id) => {
     return commentData["comments"].find(comment => comment.comment_id === parseInt(id));
 }
 
-const findCommentsByPostId = async (id) => {
+const findCommentsByBoardId = async (id) => {
     var sql = 'SELECT * from comments WHERE board_id=?';
     var params = [id];
     try {
@@ -86,7 +86,7 @@ const deleteCommentsByPostId = (id) => {
 
 module.exports = {
     findCommentsByCommentId,
-    findCommentsByPostId,
+    findCommentsByBoardId,
     makeNewComment,
     saveNewComment,
     patchCommentContent,
