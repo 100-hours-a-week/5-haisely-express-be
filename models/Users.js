@@ -85,7 +85,7 @@ const saveNewUser = async (email, password, nickname, profileImage) => {
     }
 }
 
-const patchUserContent = async (user_id, nickname, profile_image) => {
+const patchUserContent = async (userId, nickname, profileImage) => {
     const startTransaction = "START TRANSACTION;";
     const updateImage = "INSERT INTO images (file_url) VALUES (?);";
     const updateBoardWithImage = "UPDATE users u SET u.nickname = ?, u.image_id = LAST_INSERT_ID() WHERE u.user_id = ?;";
@@ -95,11 +95,11 @@ const patchUserContent = async (user_id, nickname, profile_image) => {
     try {
         await queryDatabase(startTransaction);
 
-        if (profile_image != null){
-            await queryDatabase(updateImage, [profile_image]);
-            await queryDatabase(updateBoardWithImage, [nickname, user_id]);
+        if (profileImage != null){
+            await queryDatabase(updateImage, [profileImage]);
+            await queryDatabase(updateBoardWithImage, [nickname, userId]);
         } else {
-            await queryDatabase(updateBoard, [nickname, null, user_id]);
+            await queryDatabase(updateBoard, [nickname, null, userId]);
         }
 
         await queryDatabase(commitTransaction);
@@ -112,12 +112,17 @@ const patchUserContent = async (user_id, nickname, profile_image) => {
     }
 }
 
-const patchUserPassword = (password) => {
-    // const userData = loadData(userDataPath);
-    // const userIndex = userData["users"].findIndex(u => u.user_id === user.user_id);
-    // user.updated_at = getTimeNow();
-    // userData["users"][userIndex] = user;
-    // saveData(userData, userDataPath);
+const patchUserPassword = async (userId, password) => {
+    let sql = 'UPDATE users u SET u.password = ? WHERE u.user_id = ?;';
+
+    let params = [password, userId];
+    try {
+        const result = await queryDatabase(sql, params);
+        return result[0];
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
 }
 
 const deleteUserById = (id) => {

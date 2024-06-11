@@ -22,7 +22,8 @@ router.get('/', userController.getUserById);
 router.patch('/', userController.patchUser);
 
 // 비밀번호 변경
-router.patch('/password', authenticateMiddleware, userController.patchPassword);
+// router.patch('/password', authenticateMiddleware, userController.patchPassword);
+router.patch('/password', userController.patchPassword);
 
 // 회원 정보 삭제
 router.delete('/', authenticateMiddleware, userController.deleteUser);

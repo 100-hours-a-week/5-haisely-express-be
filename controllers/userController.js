@@ -3,7 +3,7 @@
 // [ ] sql로 쿠키 세션 구현
 
 const {makeRes} = require ('./controllerUtils.js');
-const {findUserByEmail, findUserById, findUserByNickname, saveNewUser, patchUserContent, deleteUserById} = require('../models/Users.js')
+const {findUserByEmail, findUserById, findUserByNickname, saveNewUser, patchUserContent, patchUserPassword, deleteUserById} = require('../models/Users.js')
 
 /* Controller */
 const login = (req, res) => {
@@ -62,14 +62,14 @@ const patchUser = async (req, res) => {
     res.status(200).json(makeRes(200, "update_user_data_success", null));
 }
 
-const patchPassword = (req, res) => {
+const patchPassword = async (req, res) => {
     const requestData = req.body;
-    const userId = req.session.user.user_id;
+    // const userId = req.session.user.user_id;
+    const userId = 1;
     if(!requestData.password){res.status(400).json(makeRes(400, "invalid_password", null)); return;} // invalid password
-    let user = findUserById(userId);
+    let user = await findUserById(userId);
     if(!user) {res.status(404).json(makeRes(404, "not_found_user", null)); return;}  // user not found
-    user.password = requestData.password;
-    patchUserContent(user);
+    await patchUserPassword(userId,requestData.password);
     res.status(200).json(makeRes(200, "update_user_password_success", null));
 }
 
