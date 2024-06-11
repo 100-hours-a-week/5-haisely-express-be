@@ -84,16 +84,16 @@ const authCheck = (req, res) => {
     res.status(200).json(makeRes(200, null, null));
 }
 
-const emailCheck = (req, res) => {
+const emailCheck = async (req, res) => {
     const {email} = req.query;
-    const user = findUserByEmail(email);
+    const user = await findUserByEmail(email);
     if (user){res.status(400).json(makeRes(400, "already_exist_email", null)); return;}  // already used email
     res.status(200).json(makeRes(200, "available_email", null));
 }
 
-const nicknameCheck =  (req, res) => {
+const nicknameCheck = async (req, res) => {
     const {nickname} = req.query;
-    const user = findUserByNickname(nickname);
+    const user = await findUserByNickname(nickname);
     if (user){res.status(400).json(makeRes(400, "already_exist_nickname", null)); return;}  // already used nickname
     res.status(200).json(makeRes(200, "available_nickname", null));
 }

@@ -14,7 +14,8 @@ router.post('/signup', userController.signUp);
 router.post('/logout', authenticateMiddleware, userController.logout);
 
 // 회원 정보 조회
-router.get('/', authenticateMiddleware, userController.getUserById);
+// router.get('/', authenticateMiddleware, userController.getUserById);
+router.get('/', userController.getUserById);
 
 // 회원 정보 수정
 router.patch('/', authenticateMiddleware, userController.patchUser);
