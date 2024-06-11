@@ -18,14 +18,11 @@ function queryDatabase(sql, params) {
 
 /* Utils */
 const findCommentsByCommentId = async (id) => {
-    // const commentData = loadData(commentDataPath);
-    // return commentData["comments"].find(comment => comment.comment_id === parseInt(id));
     let sql = 'select * from comments\
     WHERE comment_id=? and deleted_at is NULL;';
     let params = [id];
     try {
         const result = await queryDatabase(sql, params);
-        console.log(result);
         return result[0];
     } catch (err) {
         console.log(err);
@@ -81,10 +78,15 @@ const patchCommentContent = async (id, content) => {
 }
 
 const deleteCommentById = async (id) => {
-    // const commentData = loadData(commentDataPath);
-    // const commentIndex = commentData["comments"].findIndex(comment => comment.comment_id === parseInt(id));
-    // commentData["comments"].splice(commentIndex, 1);
-    // saveData(commentData, commentDataPath);
+    let sql = 'UPDATE comments c set c.deleted_at = CURRENT_TIMESTAMP WHERE c.comment_id = ?;'
+    let params = [id];
+    try {
+        const result = await queryDatabase(sql, params);
+        return result;
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
 }
 
 

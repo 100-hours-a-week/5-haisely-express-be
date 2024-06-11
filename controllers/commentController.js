@@ -30,7 +30,7 @@ const patchComment = async (req, res) =>{
 
 const deleteComment = async (req, res) =>{
     const commentId = req.params.commentId;
-    const comment = findCommentsByCommentId(commentId);
+    const comment = await findCommentsByCommentId(commentId);
     if (!comment) {res.status(404).json(makeRes(404, "cannot_found_comment", null)); return;}  // comment not found
     await deleteCommentById(commentId);
     res.status(200).json(makeRes(204, "delete_post_success", null));

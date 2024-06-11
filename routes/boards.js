@@ -41,6 +41,7 @@ router.post("/:id/comments", commentController.postComment);
 router.patch("/:postId/comments/:commentId", commentController.patchComment);
 
 // 댓글 삭제 "/{post_id}/comments/{comment_id}" *
-router.delete("/:postId/comments/:commentId", authenticateMiddleware, authorizeCommentMiddleware, commentController.deleteComment);
+// router.delete("/:postId/comments/:commentId", authenticateMiddleware, authorizeCommentMiddleware, commentController.deleteComment);
+router.delete("/:postId/comments/:commentId", commentController.deleteComment);
 
 module.exports = router;
