@@ -26,7 +26,8 @@ router.patch('/', userController.patchUser);
 router.patch('/password', userController.patchPassword);
 
 // 회원 정보 삭제
-router.delete('/', authenticateMiddleware, userController.deleteUser);
+// router.delete('/', authenticateMiddleware, userController.deleteUser);
+router.delete('/', userController.deleteUser);
 
 // 로그인 상태 확인
 router.get('/auth/check', authenticateMiddleware, userController.authCheck);

@@ -73,9 +73,12 @@ const patchPassword = async (req, res) => {
     res.status(200).json(makeRes(200, "update_user_password_success", null));
 }
 
-const deleteUser = (req, res) => {
-    const userId = req.session.user.user_id;
-    deleteUserById(userId);
+const deleteUser = async (req, res) => {
+    // const userId = req.session.user.user_id;
+    const userId = 2;
+    let user = await findUserById(userId);
+    if(!user) {res.status(404).json(makeRes(404, "not_found_user", null)); return;}  // user not found
+    await deleteUserById(userId);
     res.status(200).json(makeRes(204,"delete_user_success", null));
 }
 

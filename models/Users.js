@@ -125,15 +125,27 @@ const patchUserPassword = async (userId, password) => {
     }
 }
 
-const deleteUserById = (id) => {
-    // const userData = loadData(userDataPath);
-    // const userIndex = userData["users"].findIndex(u => u.user_id === parseInt(id));
-    // const removedItem = userData["users"].splice(userIndex, 1);
-    // saveData(userData, userDataPath);
-    // // delete boards written by user
-    // let boardData = loadData(boardDataPath);
-    // const boards = boardData["boards"].filter(b => b.user_id === parseInt(id));
-    // boards.forEach(board => deleteBoardById(board.board_id));
+const deleteUserById = async (id) => {
+    const startTransaction = "START TRANSACTION;";
+    const deleteUser = "UPDATE users u set u.deleted_at = CURRENT_TIMESTAMP WHERE u.user_id = ?;";
+    const deleteBoard = "UPDATE boards b set b.deleted_at = CURRENT_TIMESTAMP WHERE b.user_id = ? and b.deleted_at is NULL;";
+    const deleteComment = "UPDATE comments c set c.deleted_at = CURRENT_TIMESTAMP WHERE c.user_id = ? and c.deleted_at is NULL ;";
+    const commitTransaction = "COMMIT;";
+    let params = [id];
+
+    try {
+        await queryDatabase(startTransaction);
+        await queryDatabase(deleteUser, params);
+        await queryDatabase(deleteBoard, params);
+        await queryDatabase(deleteComment, params);
+        await queryDatabase(commitTransaction);
+        console.log('Transaction completed successfully');
+
+    } catch (error) {
+        await queryDatabase("ROLLBACK;");
+        console.error('Transaction failed, rollback executed', error);
+        return null;
+    }
 }
 
 module.exports = {
