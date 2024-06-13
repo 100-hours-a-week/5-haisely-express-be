@@ -6,7 +6,15 @@ select b.board_id, u.nickname writer, i2.file_url profile_image, b.title, b.cont
 left join board_hits h on b.board_id = h.board_id
 left join images i on b.image_id = i.image_id
 left join users u on b.user_id = u.user_id
-left join images i2 on u.image_id = i2.image_id;
+left join images i2 on u.image_id = i2.image_id
+where b.deleted_at is NULL;
+
+select b.board_id, u.nickname writer, i2.file_url profile_image, b.title, b.content, i.file_url board_image, b.created_at, b.updated_at, b.deleted_at, h.hit from boards b 
+left join board_hits h on b.board_id = h.board_id
+left join images i on b.image_id = i.image_id
+left join users u on b.user_id = u.user_id
+left join images i2 on u.image_id = i2.image_id
+where b.board_id = 1 and b.deleted_at is NULL;
 
 -- get user data
 select u.user_id, u.nickname, u.email, i.file_url from users u
