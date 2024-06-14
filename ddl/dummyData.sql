@@ -32,8 +32,4 @@ INSERT INTO board_hits (board_id, hit) VALUES
 (2, 20),
 (3, 30);
 
--- Inserting dummy data into sessions table
-INSERT INTO sessions (token, user_id) VALUES
-('token1', 1),
-('token2', 2),
-('token3', 3);
+
