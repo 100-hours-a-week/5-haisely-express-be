@@ -12,8 +12,7 @@ const postComment = async (req, res) =>{
     if(!requestData.commentContent){res.status(400).json(makeRes(400, "invalid_comment_content", null)); return;} // invalid content
     const board = await findBoardById(boardId);
     if (!board) {res.status(404).json(makeRes(404, "cannot_found_post", null)); return;}  // board not found
-    // const user = req.session.user
-    const user = {user_id: 1};
+    const user = req.session.user;
     const commentId = await saveNewComment(boardId, user, requestData.commentContent);
     res.status(201).json(makeRes(201, "write_comment_success", {"comment_id" : commentId}));
 }

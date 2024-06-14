@@ -26,7 +26,6 @@ const signUp = async (req, res) => {
     if(!requestData.password){res.status(400).json(makeRes(400, "invalid_password", null)); return;} // invalid password
     if(await findUserByEmail(requestData.email)){res.status(400).json(makeRes(400, "used_email", null)); return;} // used email
     if(await findUserByNickname(requestData.nickname)){res.status(400).json(makeRes(400, "used_nickname", null)); return;} // used nickname
-    // const newUser = makeNewUser(requestData.email, requestData.password, requestData.nickname, requestData.profileImagePath);
     const userId = await saveNewUser(requestData.email, requestData.password, requestData.nickname, requestData.profileImagePath);
     res.status(201).json(makeRes(201, "register_success", {"user_id":userId}));
 }
@@ -42,8 +41,7 @@ const logout = (req, res) => {
 }
 
 const getUserById = async (req, res) => {
-    // const userId = req.session.user.user_id;
-    const userId =1;
+    const userId = req.session.user.user_id;
     console.log(userId);
     let user = await findUserById(userId);
     if(!user) {res.status(404).json(makeRes(404, "not_found_user", null)); return;}  // user not found
@@ -53,8 +51,7 @@ const getUserById = async (req, res) => {
 
 const patchUser = async (req, res) => {
     const requestData = req.body;
-    // const userId = req.session.user.user_id;
-    const userId = 1;
+    const userId = req.session.user.user_id;
     if(!requestData.nickname){res.status(400).json(makeRes(400, "invalid_nickname", null)); return;} // invalid nickname
     let user = await findUserById(userId);
     if(!user) {res.status(404).json(makeRes(404, "not_found_user", null)); return;}  // user not found
@@ -64,8 +61,7 @@ const patchUser = async (req, res) => {
 
 const patchPassword = async (req, res) => {
     const requestData = req.body;
-    // const userId = req.session.user.user_id;
-    const userId = 1;
+    const userId = req.session.user.user_id;
     if(!requestData.password){res.status(400).json(makeRes(400, "invalid_password", null)); return;} // invalid password
     let user = await findUserById(userId);
     if(!user) {res.status(404).json(makeRes(404, "not_found_user", null)); return;}  // user not found
@@ -74,8 +70,7 @@ const patchPassword = async (req, res) => {
 }
 
 const deleteUser = async (req, res) => {
-    // const userId = req.session.user.user_id;
-    const userId = 2;
+    const userId = req.session.user.user_id;
     let user = await findUserById(userId);
     if(!user) {res.status(404).json(makeRes(404, "not_found_user", null)); return;}  // user not found
     await deleteUserById(userId);

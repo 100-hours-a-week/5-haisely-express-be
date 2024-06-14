@@ -27,8 +27,7 @@ const postBoard = async (req, res) =>{
     const requestData = req.body;
     if(!requestData.postTitle){res.status(400).json(makeRes(400, "invalid_post_title", null)); return;} // invalid title
     if(!requestData.postContent){res.status(400).json(makeRes(400, "invalid_post_content", null)); return;} // invalid content
-    // const user = req.session.user
-    const user = {user_id: 1}
+    const user = req.session.user
     const boardId = await makeNewBoard(user, requestData.postTitle, requestData.postContent, requestData.attachFilePath);
     res.status(201).json(makeRes(201, "write_post_success", {"board_id" : boardId}));
 }
