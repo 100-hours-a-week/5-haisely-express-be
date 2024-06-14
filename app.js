@@ -1,9 +1,12 @@
 // express 모듈을 불러옵니다.
 const express = require('express');
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const MySQLStore = require('express-mysql-session')(session);
+const mysql = require('mysql');
 const cors = require('cors');
+const db = require('./secret/database');
+const conn = db.init();
 
 // express 애플리케이션을 생성합니다.
 const app = express();
@@ -16,17 +19,16 @@ app.use(cors({
     origin: ['http://localhost:3000'], 
     credentials: true  
 }));
-app.use(
-    session({
-        secret: 'yourSecretKey',
-        saveUninitialized: true,
-        resave: false,
-        cookie: {
-            maxAge: 24 * 60 * 60 * 1000, // 쿠키 유효 시간 (예: 1일)
-            secure: false 
-        },
-    }),
-);
+
+const sessionStore = new MySQLStore({}, conn);
+app.use(session({
+    key: 'session_cookie_name',
+    secret: 'your-secret-key',
+    store: sessionStore,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false } 
+}));
 
 
 app.use((err, req, res, next) => {

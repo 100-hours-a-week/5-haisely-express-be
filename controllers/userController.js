@@ -6,11 +6,11 @@ const {makeRes} = require ('./controllerUtils.js');
 const {findUserByEmail, findUserById, findUserByNickname, saveNewUser, patchUserContent, patchUserPassword, deleteUserById} = require('../models/Users.js')
 
 /* Controller */
-const login = (req, res) => {
+const login = async (req, res) => {
     const requestData = req.body;
     if(!requestData.email){res.status(400).json(makeRes(400, "invalid_user_email", null)); return;} // invalid email
     if(!requestData.password){res.status(400).json(makeRes(400, "invalid_user_password", null)); return;} // invalid password
-    let user = findUserByEmail(requestData.email);
+    let user = await findUserByEmail(requestData.email);
     if(!user){res.status(401).json(makeRes(401, "user_not_found_for_email", null)); return;} // no user
     if(user.password !== requestData.password){res.status(401).json(makeRes(401, "incorrect_password", null)); return;} // incorrect password
     delete user.password;
