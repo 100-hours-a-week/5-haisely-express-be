@@ -11,7 +11,7 @@ const {findCommentsByBoardId} = require('../models/Comments.js')
 /* Controller */
 const getBoards = async (req, res) => {
     const boardData = await getAllBoards();
-    res.status(200).json(makeRes(200, null, boardData));
+    res.status(200).json(makeRes(200, null, {'boards':boardData}));
 }
 
 const getBoardDetail = async (req, res) => {

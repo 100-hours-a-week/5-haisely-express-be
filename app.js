@@ -3,7 +3,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
-const mysql = require('mysql');
 const cors = require('cors');
 const db = require('./secret/database');
 const conn = db.init();
@@ -14,7 +13,6 @@ const app = express();
 app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
 app.use(cors({
     origin: ['http://localhost:3000'], 
     credentials: true  

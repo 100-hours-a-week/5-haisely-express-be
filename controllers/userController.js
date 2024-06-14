@@ -36,7 +36,7 @@ const logout = (req, res) => {
         if (error) {
             return res.status(500).json(makeRes(500, "로그아웃 중 문제가 발생했습니다.", null));
         }
-
+        res.clearCookie('session_cookie_name');
         return res.status(200).json(makeRes(200, null, null));
     });
 }

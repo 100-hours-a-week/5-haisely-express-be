@@ -14,20 +14,16 @@ router.post('/signup', userController.signUp);
 router.post('/logout', authenticateMiddleware, userController.logout);
 
 // 회원 정보 조회
-// router.get('/', authenticateMiddleware, userController.getUserById);
-router.get('/', userController.getUserById);
+router.get('/', authenticateMiddleware, userController.getUserById);
 
 // 회원 정보 수정
-// router.patch('/', authenticateMiddleware, userController.patchUser);
-router.patch('/', userController.patchUser);
+router.patch('/', authenticateMiddleware, userController.patchUser);
 
 // 비밀번호 변경
-// router.patch('/password', authenticateMiddleware, userController.patchPassword);
-router.patch('/password', userController.patchPassword);
+router.patch('/password', authenticateMiddleware, userController.patchPassword);
 
 // 회원 정보 삭제
-// router.delete('/', authenticateMiddleware, userController.deleteUser);
-router.delete('/', userController.deleteUser);
+router.delete('/', authenticateMiddleware, userController.deleteUser);
 
 // 로그인 상태 확인
 router.get('/auth/check', authenticateMiddleware, userController.authCheck);
