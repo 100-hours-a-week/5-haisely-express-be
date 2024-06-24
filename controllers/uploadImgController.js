@@ -1,5 +1,6 @@
 const multer = require('multer');
 const path = require('path');
+const {makeRes} = require ('./controllerUtils.js');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -29,7 +30,8 @@ const getImgUrl = (req, res) => {
     jsonData = {
         "status" : 201, "message" : "file_upload_success", "data" : {"file_path": filePath }
     }
-    res.json(jsonData);
+    console.log(jsonData);
+    res.status(201).json(makeRes(201, "file_upload_success", {"file_path": filePath } ));
 }
 
 module.exports = {

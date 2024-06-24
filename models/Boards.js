@@ -18,7 +18,7 @@ function queryDatabase(sql, params) {
 
 /* Utils */
 const getAllBoards = async() => {
-    let sql = 'select b.board_id, u.nickname writer, i2.file_url profile_image, b.title, b.content, i.file_url board_image, b.created_at, b.updated_at, b.deleted_at, h.hit from boards b \
+    let sql = 'select b.board_id, u.nickname nickname, i2.file_url profile_image, b.title, b.content, i.file_url board_image, b.created_at, b.updated_at, b.deleted_at, h.hit from boards b \
     left join board_hits h on b.board_id = h.board_id\
     left join images i on b.image_id = i.image_id\
     left join users u on b.user_id = u.user_id\
@@ -49,7 +49,7 @@ const findBoardById = async (id) => {
 }
 
 const findBoardDetailById = async (id) => {
-    let sql = 'select b.board_id, u.nickname writer, i2.file_url profile_image, b.title, b.content, i.file_url board_image, b.created_at, b.updated_at, b.deleted_at, h.hit from boards b \
+    let sql = 'select b.board_id, u.nickname nickname, i2.file_url profile_image, b.title, b.content, i.file_url board_image, b.created_at, b.updated_at, b.deleted_at, h.hit from boards b \
     left join board_hits h on b.board_id = h.board_id\
     left join images i on b.image_id = i.image_id\
     left join users u on b.user_id = u.user_id\

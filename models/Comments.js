@@ -32,8 +32,10 @@ const findCommentsByCommentId = async (id) => {
 }
 
 const findCommentsByBoardId = async (id) => {
-    let sql = 'SELECT * from comments\
-    WHERE board_id=? and deleted_at is NULL;';
+    let sql = 'SELECT c.comment_id, c.user_id, u.nickname, i.file_url profile_image, c.content, c.created_at from comments c\
+    left join users u on c.user_id = u.user_id\
+    left join images i on u.image_id = i.image_id\
+    WHERE board_id=? and c.deleted_at is NULL;';
     let params = [id];
     try {
         const result = await queryDatabase(sql, params);
