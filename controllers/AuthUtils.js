@@ -9,18 +9,20 @@ const authenticateMiddleware = (req, res, next) => {
     next(); 
 };
 
-const authorizeBoardMiddleware = (req, res, next) => {
+const authorizeBoardMiddleware = async (req, res, next) => {
     const boardId = req.params.id;
-    const board = Boards.findBoardById(boardId);
+    const board = await Boards.findBoardById(boardId);
     if (board.user_id !== req.session.user.user_id) {
         return res.status(403).json(makeRes(403, "required_permission", null));
     }
     next();
 }
 
-const authorizeCommentMiddleware = (req, res, next) => {
+const authorizeCommentMiddleware = async (req, res, next) => {
     const commentId = req.params.commentId;
-    const comment = Comments.findCommentsByCommentId(commentId);
+    const comment = await Comments.findCommentsByCommentId(commentId);
+    console.log(comment);
+    console.log(req.session.user);
     if (comment.user_id !== req.session.user.user_id) {
         return res.status(403).json(makeRes(403, "required_permission", null));
     }

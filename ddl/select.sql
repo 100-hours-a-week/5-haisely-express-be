@@ -1,9 +1,14 @@
 -- select
-
-select * from users;
+select * from sessions;
+select * from users; 
 select * from images;
 select * from boards;
 select * from comments;
+
+INSERT INTO users (nickname, email, password) VALUES
+('user3', 'user3@example.com', 'password3');
+ALTER TABLE users
+ALTER COLUMN image_id SET DEFAULT 1;
 
 update comments set content = 'new content' where comment_id = 1;
 

@@ -1,4 +1,5 @@
-drop database community;
+-- drop database community;
+
 
 create database community;
 use community;
@@ -11,7 +12,7 @@ CREATE TABLE images(
 
 CREATE TABLE users(
     user_id INT PRIMARY KEY AUTO_INCREMENT,
-    image_id INT,
+    image_id INT DEFAULT 1,
     nickname VARCHAR(64) NOT NULL,
     email VARCHAR(32) NOT NULL,
     password VARCHAR(32) NOT NULL,
@@ -53,12 +54,12 @@ CREATE TABLE board_hits(
     FOREIGN KEY (board_id) REFERENCES boards(board_id)
 );
 
-CREATE TABLE sessions(
-	session_id INT PRIMARY KEY AUTO_INCREMENT,
-    token VARCHAR(128),
-    user_id INT,
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
-);
+-- CREATE TABLE sessions(
+-- 	session_id INT PRIMARY KEY AUTO_INCREMENT,
+--     token VARCHAR(128),
+--     user_id INT,
+--     FOREIGN KEY (user_id) REFERENCES users(user_id)
+-- );
 
 CREATE INDEX idx_email ON users(email);
 CREATE INDEX idx_nickname ON users(nickname);
