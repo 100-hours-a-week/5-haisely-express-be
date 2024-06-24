@@ -43,6 +43,20 @@ const findUserById = async (id) => {
     }
 }
 
+const findUserInfoById = async (id) => {
+    let sql = 'select nickname, email, i.file_url profile_image from users u\
+    left join images i on u.image_id = i.image_id\
+    WHERE user_id=? and deleted_at is NULL;';
+    let params = [id];
+    try {
+        const result = await queryDatabase(sql, params);
+        return result[0];
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
+}
+
 const findUserByNickname = async (nickname) => {
     let sql = 'SELECT * from users\
     WHERE nickname=? and deleted_at is NULL;';
@@ -97,6 +111,7 @@ const patchUserContent = async (userId, nickname, profileImage) => {
 
         if (profileImage != null){
             await queryDatabase(updateImage, [profileImage]);
+            console.log(profileImage);
             await queryDatabase(updateBoardWithImage, [nickname, userId]);
         } else {
             await queryDatabase(updateBoard, [nickname, null, userId]);
@@ -155,5 +170,6 @@ module.exports = {
     saveNewUser,
     patchUserContent,
     patchUserPassword,
-    deleteUserById
+    deleteUserById,
+    findUserInfoById
 };
