@@ -105,7 +105,7 @@ const patchUserContent = async (userId, nickname, profileImage) => {
     const updateBoardWithImage = "UPDATE users u SET u.nickname = ?, u.image_id = LAST_INSERT_ID() WHERE u.user_id = ?;";
     const updateBoard = "UPDATE users u SET u.nickname = ?, u.image_id = ? WHERE u.user_id = ?;";
     const commitTransaction = "COMMIT;";
-
+    
     try {
         await queryDatabase(startTransaction);
 
