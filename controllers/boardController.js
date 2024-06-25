@@ -52,7 +52,7 @@ const deleteBoard = async (req, res) => {
     console.log(board)
     if (!board) {res.status(404).json(makeRes(404, "cannot_found_post", null)); return;}  // board not found
     await deleteBoardById(boardId);
-    res.status(200).json(makeRes(204,"delete_post_success", null));
+    res.status(204).json(makeRes(204,"delete_post_success", null));
 }
 
 module.exports = {
